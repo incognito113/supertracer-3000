@@ -1,20 +1,28 @@
 CC = g++
 CFLAGS = -g -Wall -Wextra -Werror -MMD -MP
 BUILD_DIR = build
-TARGET = main
 
-# Source files
-SRCS = main.cpp color.cpp plane.cpp shape.cpp sphere.cpp vector.cpp
-OBJS = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRCS))
-DEPS = $(OBJS:.o=.d)
+# Automatically find all .cpp files
+SRCS := $(wildcard *.cpp)
+
+# Separate main.cpp and test.cpp
+MAIN_SRC := main.cpp
+TEST_SRC := test.cpp
+OTHER_SRCS := $(filter-out $(MAIN_SRC) $(TEST_SRC), $(SRCS))
+
+OBJS_MAIN := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(MAIN_SRC) $(OTHER_SRCS))
+OBJS_TEST := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(TEST_SRC) $(OTHER_SRCS))
+
+DEPS := $(OBJS_MAIN:.o=.d) $(OBJS_TEST:.o=.d)
 
 # Default target
-all: main
+all: $(BUILD_DIR)/main
 
-# Build the executable
-build: $(BUILD_DIR)/$(TARGET)
+# Build executables
+$(BUILD_DIR)/main: $(OBJS_MAIN) | build_dir
+	$(CC) $(CFLAGS) $^ -o $@
 
-$(BUILD_DIR)/$(TARGET): $(OBJS)
+$(BUILD_DIR)/test: $(OBJS_TEST) | build_dir
 	$(CC) $(CFLAGS) $^ -o $@
 
 # Pattern rule for object files
@@ -23,13 +31,21 @@ $(BUILD_DIR)/%.o: %.cpp | build_dir
 
 -include $(DEPS)
 
-# Run the program
-main: build
-	./$(BUILD_DIR)/$(TARGET)
+# Run targets
+main: $(BUILD_DIR)/main
+	./$(BUILD_DIR)/main
 
+test: $(BUILD_DIR)/test
+	./$(BUILD_DIR)/test
+
+# Build all without running
+build: $(BUILD_DIR)/main $(BUILD_DIR)/test
+
+# Clean
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: build_dir clean main build
+.PHONY: all main test build clean build_dir
+
 build_dir:
 	mkdir -p $(BUILD_DIR)
