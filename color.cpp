@@ -1,33 +1,50 @@
 #include "color.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
+#include <string>
 
+// Convert rgb integers to doubles in [0, 1]
+Color::Color(int red, int green, int blue)
+    : r(std::min(std::max(red / 255.0, 0.0), 1.0)),
+      g(std::min(std::max(green / 255.0, 0.0), 1.0)),
+      b(std::min(std::max(blue / 255.0, 0.0), 1.0)) {};
+
+// Bound resulting color components to the range [0, 1]
 Color Color::add(const Color& other) const {
-  // Bound resulting color components to the range [0, 1]
-  int new_r = std::min(this->r + other.r, 1.0);
-  int new_g = std::min(this->g + other.g, 1.0);
-  int new_b = std::min(this->b + other.b, 1.0);
+  double new_r = std::min(this->r + other.r, 1.0);
+  double new_g = std::min(this->g + other.g, 1.0);
+  double new_b = std::min(this->b + other.b, 1.0);
   return Color(new_r, new_g, new_b);
 }
 
+// Multiply color components (always in [0, 1])
 Color Color::mult(const Color& other) const {
-  // Multiply color components and scale to [0, 1]
-  int new_r = this->r * other.r;
-  int new_g = this->g * other.g;
-  int new_b = this->b * other.b;
+  double new_r = this->r * other.r;
+  double new_g = this->g * other.g;
+  double new_b = this->b * other.b;
   return Color(new_r, new_g, new_b);
 }
 
+// Scale color components and bound to [0, 1]
 Color Color::scale(double factor) const {
-  // Scale color components and bound to [0, 1]
-  int new_r = std::min(this->r * factor, 1.0);
-  int new_g = std::min(this->g * factor, 1.0);
-  int new_b = std::min(this->b * factor, 1.0);
+  double new_r = std::max(std::min(this->r * factor, 1.0), 0.0);
+  double new_g = std::max(std::min(this->g * factor, 1.0), 0.0);
+  double new_b = std::max(std::min(this->b * factor, 1.0), 0.0);
   return Color(new_r, new_g, new_b);
 }
 
-std::ostream& Color::operator<<(std::ostream& os) {
-  os << "Color(" << r << ", " << g << ", " << b << ")";
+std::string Color::get255String() const {
+  int red_255 = static_cast<int>(std::round(this->r * 255));
+  int green_255 = static_cast<int>(std::round(this->g * 255));
+  int blue_255 = static_cast<int>(std::round(this->b * 255));
+  return std::to_string(red_255) + " " + std::to_string(green_255) + " " +
+         std::to_string(blue_255);
+}
+
+// Print color as Color(r, g, b)
+std::ostream& operator<<(std::ostream& os, const Color& color) {
+  os << "Color(" << color.r << ", " << color.g << ", " << color.b << ")";
   return os;
 }
