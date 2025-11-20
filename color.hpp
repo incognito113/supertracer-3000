@@ -7,6 +7,7 @@ class Color {
   double r;
   double g;
   double b;
+  static constexpr double EPS = 1e-9;
 
  public:
   Color() : r(0), g(0), b(0) {};
@@ -23,6 +24,8 @@ class Color {
   Color operator+(const Color& other) const;
   Color operator*(const Color& other) const;
   Color operator*(double factor) const;
+  bool operator==(const Color& other) const;
+  bool operator!=(const Color& other) const;
 
   friend std::ostream& operator<<(std::ostream& os, const Color& color);
 

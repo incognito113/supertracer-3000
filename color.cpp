@@ -62,6 +62,15 @@ Color Color::operator*(const Color& other) const { return this->mult(other); }
 // Scalar multiplication
 Color Color::operator*(double factor) const { return this->scale(factor); }
 
+// Check if two colors are equal
+bool Color::operator==(const Color& other) const {
+  return (std::abs(r - other.r) < EPS) && (std::abs(g - other.g) < EPS) &&
+         (std::abs(b - other.b) < EPS);
+}
+
+// Check if two colors are not equal
+bool Color::operator!=(const Color& other) const { return !(*this == other); }
+
 // Print color as Color(r, g, b)
 std::ostream& operator<<(std::ostream& os, const Color& color) {
   os << "Color(" << color.r << ", " << color.g << ", " << color.b << ")";
