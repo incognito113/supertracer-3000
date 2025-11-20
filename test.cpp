@@ -9,6 +9,8 @@
 #include "vector.hpp"
 
 void test_color() {
+  std::cout << "Testing Color class..." << std::endl;
+
   Color c0;
   Color c1(0.5, 0.2, 0.3);
   Color c2(0.4, 0.6, 0.1);
@@ -19,15 +21,17 @@ void test_color() {
   Color c6 = c1 * 2.0;
   Color c7 = c3 + c3;
 
-  assert(c0.r == 0.0 && c0.g == 0.0 && c0.b == 0.0);
-  assert(c4.r == 0.9 && c4.g == 0.8 && c4.b == 0.4);
-  assert(c5.r == 0.2 && c5.g == 0.12 && c5.b == 0.03);
-  assert(c6.r == 1.0 && c6.g == 0.4 && c6.b == 0.6);
-  assert(c7.r == 1.0 && c7.g == 0.4 && c7.b == 1.0);
+  assert(c0 == Color(0.0, 0.0, 0.0));
+  assert(c4 == Color(0.9, 0.8, 0.4));
+  assert(c5 == Color(0.2, 0.12, 0.03));
+  assert(c6 == Color(1.0, 0.4, 0.6));
+  assert(c7 == Color(1.0, 0.4, 1.0));
   assert(c3.get255String() == "255 51 150");
 }
 
 void test_vector() {
+  std::cout << "Testing Vector class..." << std::endl;
+
   Vector v1(2.0, 3.0, 1.0);
   Vector v2(1.0, 1.0, 0.0);
 
@@ -43,20 +47,22 @@ void test_vector() {
   Vector v9 = 2.0 * v1;
   Vector v10 = v1.norm();
 
-  assert(v3.x == 3.0 && v3.y == 4.0 && v3.z == 1.0);
-  assert(v4.x == 1.0 && v4.y == 2.0 && v4.z == 1.0);
-  assert(v5.x == 4.0 && v5.y == 6.0 && v5.z == 2.0);
+  assert(v3 == Vector(3.0, 4.0, 1.0));
+  assert(v4 == Vector(1.0, 2.0, 1.0));
+  assert(v5 == Vector(4.0, 6.0, 2.0));
   assert(dot_product == 5.0);
   assert(magnitude_v1_sq == 14.0);
   assert(magnitude_v1 == std::sqrt(14.0));
-  assert(v6.x == 2.5 && v6.y == 2.5 && v6.z == 0.0);
-  assert(v7.x == -2.0 && v7.y == -3.0 && v7.z == -1.0);
+  assert(v6 == Vector(2.5, 2.5, 0.0));
+  assert(v7 == Vector(-2.0, -3.0, -1.0));
   assert(v5 == v8 && v8 == v9);
   assert(v1 != v2);
   assert(v10.mag() == 1.0 && v1 / v1.mag() == v10);
 }
 
 void test_sphere_intersect() {
+  std::cout << "Testing Sphere intersection..." << std::endl;
+
   Material mat{};
   Sphere sphere1(Vector(0.0, 0.0, 0.0), 1.0, mat);
   Sphere sphere2(Vector(2.0, 2.0, 2.0), 0.5, mat);
@@ -74,6 +80,8 @@ void test_sphere_intersect() {
 }
 
 void test_plane_intersect() {
+  std::cout << "Testing Plane intersection..." << std::endl;
+
   Material mat{};
   Plane plane1(Vector(0.0, 5.0, 0.0), Vector(0.0, 1.0, 0.0), mat);
   Plane plane2(Vector(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0), mat);
@@ -95,5 +103,8 @@ int main() {
   test_vector();
   test_sphere_intersect();
   test_plane_intersect();
+
+  std::cout << "All tests passed!" << std::endl;
+
   return 0;
 }
