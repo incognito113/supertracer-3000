@@ -1,4 +1,5 @@
-#include "renderer.hpp"
+#include "io/image.hpp"
+#include "renderer/tracer.hpp"
 
 const std::string OUTPUT_FILE = "output.ppm";
 
@@ -7,6 +8,10 @@ int main() {
   scene.setBackground(135, 206, 235);  // Sky blue
   // Need to specify properties in the future
 
-  scene.render(OUTPUT_FILE);
+  Tracer tracer{scene};
+  Image image{tracer};
+
+  image.render(OUTPUT_FILE);
+
   return 0;
 }

@@ -3,7 +3,8 @@
 #include <cmath>
 #include <optional>
 
-#include "tracer.hpp"
+#include "math/vector.hpp"
+#include "scene/light.hpp"
 
 // Calculate intersection of ray with sphere
 std::optional<HitInfo> Sphere::intersects(const Ray& ray) const {

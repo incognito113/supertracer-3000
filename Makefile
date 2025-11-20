@@ -1,59 +1,46 @@
 CC = g++
-CFLAGS = -g -Wall -Wextra -Werror -MMD -MP -std=c++23
+CFLAGS = -g -Wall -Wextra -Werror -MMD -MP -std=c++23 -I.
 BUILD_DIR = build
 
-# Automatically find all .cpp files
-SRCS := $(wildcard *.cpp)
+# Recursively find all cpp files
+SRCS := $(shell find . -type f -name '*.cpp')
 
-# Separate main.cpp and test.cpp
-MAIN_SRC := main.cpp
-TEST_SRC := test.cpp
-OTHER_SRCS := $(filter-out $(MAIN_SRC) $(TEST_SRC), $(SRCS))
+# Convert sources to build/*.o with mirrored directory structure
+OBJS := $(patsubst ./%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
 
-OBJS_MAIN := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(MAIN_SRC) $(OTHER_SRCS))
-OBJS_TEST := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(TEST_SRC) $(OTHER_SRCS))
+# Object files for main and test targets
+MAIN_OBJ := $(BUILD_DIR)/main.o
+TEST_OBJ := $(BUILD_DIR)/test.o
+OTHER_OBJS := $(filter-out $(MAIN_OBJ) $(TEST_OBJ), $(OBJS))
 
-DEPS := $(OBJS_MAIN:.o=.d) $(OBJS_TEST:.o=.d)
+OBJS_MAIN := $(MAIN_OBJ) $(OTHER_OBJS)
+OBJS_TEST := $(TEST_OBJ) $(OTHER_OBJS)
 
-# Default target
+DEPS := $(OBJS:.o=.d)
+
 all: $(BUILD_DIR)/main
 
-# Build executables
-$(BUILD_DIR)/main: $(OBJS_MAIN) | build_dir
+$(BUILD_DIR)/main: $(OBJS_MAIN)
 	$(CC) $(CFLAGS) $^ -o $@
 
-$(BUILD_DIR)/test: $(OBJS_TEST) | build_dir
+$(BUILD_DIR)/test: $(OBJS_TEST)
 	$(CC) $(CFLAGS) $^ -o $@
 
-# Pattern rule for object files
-$(BUILD_DIR)/%.o: %.cpp | build_dir
+# Pattern rule supporting nested directories
+$(BUILD_DIR)/%.o: %.cpp
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 -include $(DEPS)
 
-# Run targets
 main: $(BUILD_DIR)/main
 	./$(BUILD_DIR)/main
 
 test: $(BUILD_DIR)/test
 	./$(BUILD_DIR)/test
 
-# Run with leaks
-leaks-main: $(BUILD_DIR)/main
-	leaks --atExit -- ./$(BUILD_DIR)/main
-
-leaks-test: $(BUILD_DIR)/test
-	leaks --atExit -- ./$(BUILD_DIR)/test
-
-# Build all without running
-build: $(BUILD_DIR)/main $(BUILD_DIR)/test
-
-# Clean
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -f *.ppm
 
-.PHONY: all main test build clean build_dir
-
-build_dir:
-	mkdir -p $(BUILD_DIR)
+.PHONY: all main test clean

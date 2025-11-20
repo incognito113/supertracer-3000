@@ -2,17 +2,10 @@
 
 #include <optional>
 
-#include "color.hpp"
-#include "tracer.hpp"
-#include "vector.hpp"
-
-// Stores matieral properties for shapes
-struct Material {
-  const Color diffuse;
-  const Color specular;
-  const double shininess;
-  const double reflectivity;
-};
+#include "math/color.hpp"
+#include "math/ray.hpp"
+#include "math/vector.hpp"
+#include "scene/material.hpp"
 
 // Stores information about collisions between rays and shapes
 struct HitInfo {

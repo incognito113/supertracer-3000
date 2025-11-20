@@ -1,8 +1,13 @@
 #pragma once
+
 #include <vector>
 
-#include "shape.hpp"
-#include "tracer.hpp"
+#include "math/camera.hpp"
+#include "math/color.hpp"
+#include "math/ray.hpp"
+#include "math/vector.hpp"
+#include "scene/light.hpp"
+#include "shapes/shape.hpp"
 
 class Scene {
  private:
@@ -14,9 +19,6 @@ class Scene {
   std::vector<Light> lights;
   std::vector<std::unique_ptr<Shape>> shapes;
 
-  Color traceRay(const Ray& ray) const;
-  Color computeLighting(const HitInfo& hitInfo) const;
-
  public:
   Scene(const int w, const int h, const int maxRefl)
       : width(w),
@@ -27,14 +29,14 @@ class Scene {
         lights(),
         shapes() {}
 
+  int getWidth() const { return width; }
+  int getHeight() const { return height; }
+  int getReflections() const { return maxReflections; }
+  Color getBackground() const { return background; }
   void setCamera(const Vector pos, const Vector dir, const double fov_deg);
   void setBackground(const int r, const int g, const int b);
   void addLight(const Vector pos, const Color color);
   void addShape(std::unique_ptr<Shape> shape);
-
-  std::vector<Color> render_pixels() const;
-
-  void render(const std::string& filename) const;
 
   ~Scene() = default;
 };

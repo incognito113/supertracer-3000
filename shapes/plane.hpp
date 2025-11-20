@@ -1,7 +1,9 @@
+#pragma once
+
 #include <optional>
 
+#include "math/vector.hpp"
 #include "shape.hpp"
-#include "vector.hpp"
 
 class Plane : public Shape {
  public:

@@ -1,6 +1,7 @@
-#include "tracer.hpp"
+#include "camera.hpp"
 
-Vector Ray::at(double t) const { return orig + dir * t; }
+#include "ray.hpp"
+#include "vector.hpp"
 
 Ray Camera::getRay(const int i, const int j, const int width,
                    const int height) const {

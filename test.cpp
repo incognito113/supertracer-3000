@@ -3,10 +3,10 @@
 #include <iostream>
 #include <optional>
 
-#include "color.hpp"
-#include "plane.hpp"
-#include "sphere.hpp"
-#include "vector.hpp"
+#include "math/color.hpp"
+#include "math/vector.hpp"
+#include "shapes/plane.hpp"
+#include "shapes/sphere.hpp"
 
 void test_color() {
   std::cout << "Testing Color class..." << std::endl;

@@ -2,8 +2,8 @@
 
 #include <optional>
 
+#include "math/vector.hpp"
 #include "shape.hpp"
-#include "vector.hpp"
 
 class Sphere : public Shape {
  public:

@@ -2,6 +2,7 @@
 
 #include <optional>
 
+#include "math/vector.hpp"
 #include "shape.hpp"
 
 // Calculate intersection of ray with plane
