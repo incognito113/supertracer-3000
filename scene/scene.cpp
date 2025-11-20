@@ -1,7 +1,5 @@
 #include "scene.hpp"
 
-#include <fstream>
-
 #include "light.hpp"
 #include "math/color.hpp"
 #include "math/vector.hpp"
