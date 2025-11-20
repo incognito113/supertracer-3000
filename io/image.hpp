@@ -6,6 +6,7 @@
 #include "math/color.hpp"
 #include "renderer/tracer.hpp"
 
+// Handles image creation and saving to files
 class Image {
  private:
   const Scene& scene;
