@@ -55,11 +55,19 @@ Vector Vector::proj(const Vector& other) const {
   return other.scale(scalar);
 }
 
+Vector Vector::cross(const Vector& other) const {
+  return Vector(y * other.z - z * other.y, z * other.x - x * other.z,
+                x * other.y - y * other.x);
+}
+
 // ----- Overloaded Operators -----
 
 // Assignment operator
-Vector Vector::operator=(const Vector& other) const {
-  return Vector(other.x, other.y, other.z);
+Vector Vector::operator=(const Vector& other) {
+  this->x = other.x;
+  this->y = other.y;
+  this->z = other.z;
+  return *this;
 }
 
 // Addition
