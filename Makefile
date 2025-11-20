@@ -39,6 +39,12 @@ main: $(BUILD_DIR)/main
 test: $(BUILD_DIR)/test
 	./$(BUILD_DIR)/test
 
+leaks-main: $(BUILD_DIR)/main
+	leaks --atExit -- ./$(BUILD_DIR)/main
+
+leaks-test: $(BUILD_DIR)/test
+	leaks --atExit -- ./$(BUILD_DIR)/test
+
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -f *.ppm
