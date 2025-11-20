@@ -15,6 +15,7 @@ class Scene {
   const int width;
   const int height;
   const int maxReflections;
+  int ambientLight;
   Camera camera;
   Color background;
   std::vector<Light> lights;
@@ -25,6 +26,7 @@ class Scene {
       : width(w),
         height(h),
         maxReflections(maxRefl),
+        ambientLight(),
         camera(),
         background(),
         lights(),
@@ -33,8 +35,10 @@ class Scene {
   int getWidth() const { return width; }
   int getHeight() const { return height; }
   int getReflections() const { return maxReflections; }
+  int getAmbientLight() const { return ambientLight; }
   const Color getBackground() const { return background; }
   const Camera getCamera() const { return camera; }
+  void setAmbientLight(const int ambient) { ambientLight = ambient; }
   void setCamera(const Vector pos, const Vector dir, const double fov_deg);
   void setBackground(const int r, const int g, const int b);
   void addLight(const Vector pos, const Color color);
