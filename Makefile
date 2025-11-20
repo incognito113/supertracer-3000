@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -g -Wall -Wextra -Werror -MMD -MP
+CFLAGS = -g -Wall -Wextra -Werror -MMD -MP -std=c++23
 BUILD_DIR = build
 
 # Automatically find all .cpp files
@@ -37,6 +37,13 @@ main: $(BUILD_DIR)/main
 
 test: $(BUILD_DIR)/test
 	./$(BUILD_DIR)/test
+
+# Run with leaks
+leaks-main: $(BUILD_DIR)/main
+	leaks --atExit -- ./$(BUILD_DIR)/main
+
+leaks-test: $(BUILD_DIR)/test
+	leaks --atExit -- ./$(BUILD_DIR)/test
 
 # Build all without running
 build: $(BUILD_DIR)/main $(BUILD_DIR)/test
