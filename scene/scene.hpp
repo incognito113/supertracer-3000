@@ -33,7 +33,8 @@ class Scene {
   int getWidth() const { return width; }
   int getHeight() const { return height; }
   int getReflections() const { return maxReflections; }
-  Color getBackground() const { return background; }
+  const Color getBackground() const { return background; }
+  const Camera getCamera() const { return camera; }
   void setCamera(const Vector pos, const Vector dir, const double fov_deg);
   void setBackground(const int r, const int g, const int b);
   void addLight(const Vector pos, const Color color);
