@@ -51,6 +51,7 @@ build: $(BUILD_DIR)/main $(BUILD_DIR)/test
 # Clean
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -f *.ppm
 
 .PHONY: all main test build clean build_dir
 
