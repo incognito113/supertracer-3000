@@ -7,9 +7,9 @@
 
 // Convert rgb integers to doubles in [0, 1]
 Color::Color(int red, int green, int blue)
-    : r(std::min(std::max(red / 255.0, 0.0), 1.0)),
-      g(std::min(std::max(green / 255.0, 0.0), 1.0)),
-      b(std::min(std::max(blue / 255.0, 0.0), 1.0)) {};
+    : r(std::min(std::max((double)red / 255.0, 0.0), 1.0)),
+      g(std::min(std::max((double)green / 255.0, 0.0), 1.0)),
+      b(std::min(std::max((double)blue / 255.0, 0.0), 1.0)) {};
 
 // Bound resulting color components to the range [0, 1]
 Color Color::add(const Color& other) const {
@@ -42,6 +42,25 @@ std::string Color::get255String() const {
   return std::to_string(red_255) + " " + std::to_string(green_255) + " " +
          std::to_string(blue_255);
 }
+
+// ----- Overloaded Operators -----
+
+// Assignment operator
+Color Color::operator=(const Color& other) {
+  this->r = other.r;
+  this->g = other.g;
+  this->b = other.b;
+  return *this;
+}
+
+// Addition
+Color Color::operator+(const Color& other) const { return this->add(other); }
+
+// Multiplication
+Color Color::operator*(const Color& other) const { return this->mult(other); }
+
+// Scalar multiplication
+Color Color::operator*(double factor) const { return this->scale(factor); }
 
 // Print color as Color(r, g, b)
 std::ostream& operator<<(std::ostream& os, const Color& color) {
