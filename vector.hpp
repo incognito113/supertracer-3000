@@ -26,6 +26,7 @@ class Vector {
   Vector proj(const Vector& other) const;
 
   // Operator overloads
+  Vector operator=(const Vector& other) const;
   Vector operator+(const Vector& other) const;
   Vector operator-(const Vector& other) const;
   Vector operator-() const;
@@ -34,6 +35,9 @@ class Vector {
   Vector operator/(double scalar) const;
   bool operator==(const Vector& other) const;
   bool operator!=(const Vector& other) const;
+
+  // Default destructor
+  ~Vector() = default;
 };
 
 Vector operator*(double scalar, const Vector& vec);

@@ -57,6 +57,11 @@ Vector Vector::proj(const Vector& other) const {
 
 // ----- Overloaded Operators -----
 
+// Assignment operator
+Vector Vector::operator=(const Vector& other) const {
+  return Vector(other.x, other.y, other.z);
+}
+
 // Addition
 Vector Vector::operator+(const Vector& other) const { return this->add(other); }
 
