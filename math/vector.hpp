@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+// Represents a 3D vector with common vector operations
 class Vector {
  private:
   // Small error tolerance for floating point comparison
@@ -38,7 +39,6 @@ class Vector {
 
   friend std::ostream& operator<<(std::ostream& os, const Vector& vec);
 
-  // Default destructor
   ~Vector() = default;
 };
 

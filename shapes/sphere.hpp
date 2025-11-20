@@ -5,9 +5,10 @@
 #include "math/vector.hpp"
 #include "shape.hpp"
 
+// Represents a sphere in 3D space
 class Sphere : public Shape {
  public:
-  Vector center;
+  const Vector center;
   double radius;
 
   Sphere(const Vector& cen, double r, const Material& mat)

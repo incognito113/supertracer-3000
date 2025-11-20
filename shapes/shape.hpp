@@ -18,6 +18,7 @@ struct HitInfo {
       : pos(p), normal(n), t(tval), material(m) {};
 };
 
+// Abstract base class for all shapes in the scene
 class Shape {
  protected:
   static constexpr double EPS = 1e-9;

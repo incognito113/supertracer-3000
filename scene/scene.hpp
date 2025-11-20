@@ -9,6 +9,7 @@
 #include "scene/light.hpp"
 #include "shapes/shape.hpp"
 
+// Represents the entire 3D scene to be rendered
 class Scene {
  private:
   const int width;

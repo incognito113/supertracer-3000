@@ -3,7 +3,8 @@
 #include "math/color.hpp"
 #include "math/vector.hpp"
 
+// Represents a point light source in the scene
 struct Light {
-  Vector position;
-  Color color;
+  const Vector position;
+  const Color color;
 };

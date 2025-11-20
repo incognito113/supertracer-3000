@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+// Represents an RGB color: components in [0, 1]
 class Color {
  private:
   double r;

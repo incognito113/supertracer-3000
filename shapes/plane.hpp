@@ -5,10 +5,11 @@
 #include "math/vector.hpp"
 #include "shape.hpp"
 
+// Represents an infinite plane in 3D space
 class Plane : public Shape {
  public:
-  Vector point;
-  Vector normal;
+  const Vector point;
+  const Vector normal;
 
   Plane(const Vector& pt, const Vector& norm, const Material& mat)
       : Shape(mat), point(pt), normal(norm.norm()) {}
