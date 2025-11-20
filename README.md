@@ -4,7 +4,7 @@ Ray tracing project for CSCI 221
 
 make build: Generate all object files and ./main executable
 
-make main (or just make): Run main executable
+make main: Run main executable
 
 make test: Run all tests
 
