@@ -1,8 +1,11 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <optional>
 
 #include "color.hpp"
+#include "plane.hpp"
+#include "sphere.hpp"
 #include "vector.hpp"
 
 void test_color() {
@@ -53,8 +56,44 @@ void test_vector() {
   assert(v10.mag() == 1.0 && v1 / v1.mag() == v10);
 }
 
+void test_sphere_intersect() {
+  Material mat{};
+  Sphere sphere1(Vector(0.0, 0.0, 0.0), 1.0, mat);
+  Sphere sphere2(Vector(2.0, 2.0, 2.0), 0.5, mat);
+  Ray ray(Vector(0.0, 0.0, -5.0), Vector(0.0, 0.0, 1.0));
+
+  std::optional<HitInfo> hitInfoOpt1 = sphere1.intersects(ray);
+  assert(hitInfoOpt1.has_value());
+  HitInfo hitInfo = hitInfoOpt1.value();
+  assert(std::abs(hitInfo.t - 4.0) < 1e-6);
+  assert(hitInfo.pos == Vector(0.0, 0.0, -1.0));
+  assert(hitInfo.normal == Vector(0.0, 0.0, -1.0));
+
+  std::optional<HitInfo> hitInfoOpt2 = sphere2.intersects(ray);
+  assert(!hitInfoOpt2.has_value());
+}
+
+void test_plane_intersect() {
+  Material mat{};
+  Plane plane1(Vector(0.0, 5.0, 0.0), Vector(0.0, 1.0, 0.0), mat);
+  Plane plane2(Vector(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0), mat);
+  Ray ray(Vector(0.0, -1.0, 0.0), Vector(0.0, 1.0, 0.0));
+
+  std::optional<HitInfo> hitInfoOpt1 = plane1.intersects(ray);
+  assert(hitInfoOpt1.has_value());
+  HitInfo hitInfo = hitInfoOpt1.value();
+  assert(std::abs(hitInfo.t - 6.0) < 1e-6);
+  assert(hitInfo.pos == Vector(0.0, 5.0, 0.0));
+  assert(hitInfo.normal == Vector(0.0, 1.0, 0.0));
+
+  std::optional<HitInfo> hitInfoOpt2 = plane2.intersects(ray);
+  assert(!hitInfoOpt2.has_value());
+}
+
 int main() {
   test_color();
   test_vector();
+  test_sphere_intersect();
+  test_plane_intersect();
   return 0;
 }
