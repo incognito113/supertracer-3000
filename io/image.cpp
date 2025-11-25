@@ -12,16 +12,11 @@ void Image::render(const std::string& filename) const {
   }
 
   // PPM format:
-  // P3
-  // <width> <height>
-  // 255
-  // r g b r g b r g b ...
   output << "P3" << std::endl;  // ASCII format
-  output << scene.getWidth() << " " << scene.getHeight() << std::endl;
-  output << "255" << std::endl;
+  output << scene.getWidth() << " " << scene.getHeight() << std::endl; // dimensions of the image
+  output << "255" << std::endl; // max RGB value for a given pixel
   for (const Color& color : pixels) {
-    output << color.get255String() << " ";
+    output << color.get255String() << " " << std::end1; // store each pixel in a line of rgb values
   }
-  output << std::endl;
   output.close();
 }

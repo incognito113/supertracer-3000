@@ -9,6 +9,8 @@
 #include "scene/light.hpp"
 #include "shapes/shape.hpp"
 
+class Tracer;
+
 // Represents the entire 3D scene to be rendered
 class Scene {
  private:
@@ -43,6 +45,9 @@ class Scene {
   void setBackground(const int r, const int g, const int b);
   void addLight(const Vector pos, const Color color);
   void addShape(std::unique_ptr<Shape> shape);
+  // remove light/shape?
 
   ~Scene() = default;
+
+  friend class Tracer;
 };
