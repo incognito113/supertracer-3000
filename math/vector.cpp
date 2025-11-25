@@ -1,110 +1,127 @@
 #include "vector.hpp"
-
 #include <cmath>
+
+// Basic vector operations
 
 // Add two vectors
 Vector Vector::add(const Vector& other) const {
-  return Vector(x + other.x, y + other.y, z + other.z);
+    return Vector(x + other.x, y + other.y, z + other.z);
 }
 
 // Subtract two vectors
 Vector Vector::subtract(const Vector& other) const {
-  return Vector(x - other.x, y - other.y, z - other.z);
+    return Vector(x - other.x, y - other.y, z - other.z);
 }
 
-// Scale vector by a double
+// Multiply vector by a scalar
 Vector Vector::scale(double scalar) const {
-  return Vector(x * scalar, y * scalar, z * scalar);
+    return Vector(x * scalar, y * scalar, z * scalar);
 }
 
 // Dot product of two vectors
 double Vector::dot(const Vector& other) const {
-  return x * other.x + y * other.y + z * other.z;
+    return x * other.x + y * other.y + z * other.z;
 }
 
-// Magnitude (length) of a vector
-double Vector::mag() const { return sqrt(this->dot(*this)); }
+// Magnitude (length)
+double Vector::mag() const {
+    return std::sqrt(this->dot(*this));
+}
 
-// Magnitude squared of a vector (dot product with itself)
-double Vector::magSq() const { return this->dot(*this); }
+// Magnitude squared
+double Vector::magSq() const {
+    return this->dot(*this);
+}
 
-// Normalize the vector (make its length 1)
+// Unit vector in same direction
 Vector Vector::norm() const {
-  double magnitude = this->mag();
+    double magnitude = this->mag();
 
-  // Return zero vector if magnitude is zero to avoid division by zero
-  if (magnitude == 0) {
-    return Vector();
-  }
-
-  return this->scale(1.0 / magnitude);
+    if (magnitude == 0) {  // avoid division by zero
+        return Vector();
+    }
+    return this->scale(1.0 / magnitude);
 }
 
-// Project this vector onto another vector
+// Projection of this vector onto another vector
 Vector Vector::proj(const Vector& other) const {
-  // Formula: (this * other / other * other) * other
-  double numerator = this->dot(other);
-  double denominator = other.dot(other);
-  double scalar = numerator / denominator;
+    double denom = other.dot(other);
+    if (denom == 0) return Vector(); // avoid divide by zero
 
-  // If the denominator of the scalar is zero, return zero vector
-  if (denominator == 0) {
-    return Vector();
-  }
-
-  return other.scale(scalar);
+    double scalar = this->dot(other) / denom;
+    return other.scale(scalar);
 }
 
+// Cross product
 Vector Vector::cross(const Vector& other) const {
-  return Vector(y * other.z - z * other.y, z * other.x - x * other.z,
-                x * other.y - y * other.x);
+    return Vector(
+        y * other.z - z * other.y,
+        z * other.x - x * other.z,
+        x * other.y - y * other.x
+    );
 }
 
-// ----- Overloaded Operators -----
+// Operator Overloads
 
 // Assignment operator
-Vector Vector::operator=(const Vector& other) {
-  this->x = other.x;
-  this->y = other.y;
-  this->z = other.z;
-  return *this;
+Vector& Vector::operator=(const Vector& other) {
+    if (this != &other) {
+        this->x = other.x;
+        this->y = other.y;
+        this->z = other.z;
+    }
+    return *this;
 }
 
 // Addition
-Vector Vector::operator+(const Vector& other) const { return this->add(other); }
+Vector Vector::operator+(const Vector& other) const {
+    return this->add(other);
+}
 
 // Subtraction
 Vector Vector::operator-(const Vector& other) const {
-  return this->subtract(other);
+    return this->subtract(other);
 }
 
-// Negation
-Vector Vector::operator-() const { return Vector(-x, -y, -z); }
+// Negate vector
+Vector Vector::operator-() const {
+    return Vector(-x, -y, -z);
+}
 
-// Scalar multiplication
-Vector Vector::operator*(double scalar) const { return this->scale(scalar); }
-// Scalar multiplication from the left
-Vector operator*(double scalar, const Vector& vec) { return vec.scale(scalar); }
+// Scalar multiplication from the right
+Vector Vector::operator*(double scalar) const {
+    return this->scale(scalar);
+}
+
+// Dot product as operator
+double Vector::operator*(const Vector& other) const {
+    return this->dot(other);
+}
 
 // Scalar division
 Vector Vector::operator/(double scalar) const {
-  return this->scale(1.0 / scalar);
+    return this->scale(1.0 / scalar);
 }
 
-// Dot product
-double Vector::operator*(const Vector& other) const { return this->dot(other); }
-
-// Check if two vectors are equal
+// Equality check
 bool Vector::operator==(const Vector& other) const {
-  return (std::abs(x - other.x) < EPS) && (std::abs(y - other.y) < EPS) &&
-         (std::abs(z - other.z) < EPS);
+    return (std::abs(x - other.x) < EPS) &&
+           (std::abs(y - other.y) < EPS) &&
+           (std::abs(z - other.z) < EPS);
 }
 
-// Check if two vectors are not equal
-bool Vector::operator!=(const Vector& other) const { return !(*this == other); }
+// Inequality check
+bool Vector::operator!=(const Vector& other) const {
+    return !(*this == other);
+}
 
-// Printing: Vector(x, y, z)
+// Output formatting
 std::ostream& operator<<(std::ostream& os, const Vector& vec) {
-  os << "Vector(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
-  return os;
+    os << "Vector(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+    return os;
+}
+
+// Scalar * Vector
+Vector operator*(double scalar, const Vector& vec) {
+    return vec.scale(scalar);
 }
