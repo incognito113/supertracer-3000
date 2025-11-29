@@ -1,25 +1,37 @@
 #include "tracer.hpp"
 
 #include <fstream>
-#include <limits>
+#include <cmath> // i think has INFINITY macro?
 
 #include "scene/scene.hpp"
 
-template <typename AnyShape>
 // Trace a ray through the scene and return the resulting hit info
 const Color Tracer::traceRay(const Ray& ray) const {
-  float closestHit = std::numeric_limit::infinity; // how does this work???
-  float distance;
+
+  // gets the object we're intersecting with first
+  float closestHit = INFINITY; // does this work??? i hope so
+  Vector distanceVector;
+  float euclideanDistance;
   HitInfo currHitInfo;
   HitInfo bestHitInfo;
   for (const AnyShape currShape : this->scene->shapes) {
-    currHitInfo = currShape.intersect(ray);
-    distance = (this->scene->camera).subtract(currHitInfo->pos);
-    distance = distance.mag();
-    if (distance < closestHit) {
-      // set it to be the current best one
+    currHitInfo = currShape.intersects(ray);
+    if (currHitInfo != std::nullopt) {
+      distanceVector = (this->scene->camera).subtract(currHitInfo->pos);
+      euclideanDistance = distanceVector.mag();
+      if (euclideanDistance < closestHit) {
+        bestHitInfo = currHitInfo;
+      }
     }
   }
+
+  // if the ray didn't hit anything, set it to be the background color
+  if (closestHit == INFINITY) {
+    return this->scene->background;
+  }
+
+  //else, we have to calculate the lighting for the object we hit
+  return this.computeLighting(bestHitInfo);
 }
 
 // Compute lighting for all lights at the hit point
