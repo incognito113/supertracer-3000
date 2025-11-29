@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "math/camera.hpp"
 #include "math/color.hpp"
