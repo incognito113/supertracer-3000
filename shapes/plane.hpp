@@ -15,4 +15,5 @@ class Plane : public Shape {
       : Shape(mat), point(pt), normal(norm.norm()) {}
 
   virtual std::optional<HitInfo> intersects(const Ray& ray) const override;
+  Plane* clone() const override { return new Plane(*this); }
 };

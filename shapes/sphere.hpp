@@ -13,5 +13,6 @@ class Sphere : public Shape {
 
   Sphere(const Vector& cen, double r, const Material& mat)
       : Shape(mat), center(cen), radius(r) {}
-  virtual std::optional<HitInfo> intersects(const Ray& ray) const override;
+  std::optional<HitInfo> intersects(const Ray& ray) const override;
+  Sphere* clone() const override { return new Sphere(*this); }
 };
