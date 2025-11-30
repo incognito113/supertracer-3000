@@ -8,9 +8,15 @@
 void Scene::setCamera(const Vector pos, const Vector dir,
                       const double fov_deg) {
   camera.position = pos;
-  camera.direction = dir;
+  camera.direction = dir.norm();
   camera.fov = fov_deg;
 }
+
+void Scene::setCameraPos(const Vector pos) { camera.position = pos; }
+
+void Scene::setCameraDir(const Vector dir) { camera.direction = dir.norm(); }
+
+void Scene::setAmbientLight(const double ambient) { ambientLight = ambient; }
 
 // Set background color
 void Scene::setBackground(const int r, const int g, const int b) {

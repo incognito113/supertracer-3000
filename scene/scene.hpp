@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 
 #include "math/camera.hpp"
 #include "math/color.hpp"
@@ -10,7 +9,9 @@
 #include "scene/light.hpp"
 #include "shapes/shape.hpp"
 
+// Forward declaration
 class Tracer;
+class Renderer;
 
 // Represents the entire 3D scene to be rendered
 class Scene {
@@ -18,7 +19,7 @@ class Scene {
   const int width;
   const int height;
   const int maxReflections;
-  int ambientLight;
+  double ambientLight;
   Camera camera;
   Color background;
   std::vector<Light> lights;
@@ -34,21 +35,37 @@ class Scene {
         background(),
         lights(),
         shapes() {}
+  Scene(const Scene& other)
+      : width(other.width),
+        height(other.height),
+        maxReflections(other.maxReflections),
+        ambientLight(other.ambientLight),
+        camera(other.camera),
+        background(other.background),
+        lights(other.lights),
+        shapes() {
+    // Deep copy of shapes
+    for (const std::unique_ptr<Shape>& shape : other.shapes) {
+      shapes.push_back(std::unique_ptr<Shape>(shape->clone()));
+    }
+  }
 
   int getWidth() const { return width; }
   int getHeight() const { return height; }
-  int getReflections() const { return maxReflections; }
-  int getAmbientLight() const { return ambientLight; }
+  int reflections() const { return maxReflections; }
+  double getAmbientLight() const { return ambientLight; }
   const Color getBackground() const { return background; }
   const Camera getCamera() const { return camera; }
-  void setAmbientLight(const int ambient) { ambientLight = ambient; }
+  void setAmbientLight(const double ambient);
   void setCamera(const Vector pos, const Vector dir, const double fov_deg);
+  void setCameraPos(const Vector pos);
+  void setCameraDir(const Vector dir);
   void setBackground(const int r, const int g, const int b);
   void addLight(const Vector pos, const Color color);
   void addShape(std::unique_ptr<Shape> shape);
-  // remove light/shape?
-
-  ~Scene() = default;
 
   friend class Tracer;
+  friend class Renderer;
+
+  ~Scene() = default;
 };
