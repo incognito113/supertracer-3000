@@ -4,21 +4,18 @@
 #include <vector>
 
 #include "math/color.hpp"
-#include "renderer/tracer.hpp"
+#include "scene/scene.hpp"
 
 // Handles image creation and saving to files
+// Quality parameter controls number of samples per pixel
 class Image {
  private:
   const Scene& scene;
-  std::vector<Color> pixels;
+  std::vector<Color>& pixels;
 
  public:
-  Image(const Scene& sc, const std::vector<Color>& px)
-      : scene(sc), pixels(px) {}
-  Image(const Tracer& tracer) : scene(tracer.scene) {
-    pixels = tracer.render_pixels();
-  }
-  void render(const std::string& filename) const;
+  Image(const Scene& sc);
+  bool save(std::string filename = "") const;
 
   ~Image() = default;
 };
