@@ -1,9 +1,12 @@
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <iostream>
 #include <optional>
 
+#include "math/camera.hpp"
 #include "math/color.hpp"
+#include "math/ray.hpp"
 #include "math/vector.hpp"
 #include "shapes/plane.hpp"
 #include "shapes/sphere.hpp"
@@ -25,8 +28,12 @@ void test_color() {
   assert(c4 == Color(0.9, 0.8, 0.4));
   assert(c5 == Color(0.2, 0.12, 0.03));
   assert(c6 == Color(1.0, 0.4, 0.6));
-  assert(c7 == Color(1.0, 0.4, 1.0));
-  assert(c3.get255String() == "255 51 150");
+  assert(c7.clamp() == Color(1.0, 0.4, 1.0));
+
+  const std::array<u_char, 3> bytes = c3.getBytes();
+  assert(bytes[0] == static_cast<u_char>(255));
+  assert(bytes[1] == static_cast<u_char>(51));
+  assert(bytes[2] == static_cast<u_char>(150));
 }
 
 void test_vector() {
@@ -46,6 +53,7 @@ void test_vector() {
   Vector v8 = v1 / 0.5;
   Vector v9 = 2.0 * v1;
   Vector v10 = v1.norm();
+  Vector v11 = v1.cross(v2);
 
   assert(v3 == Vector(3.0, 4.0, 1.0));
   assert(v4 == Vector(1.0, 2.0, 1.0));
@@ -58,6 +66,7 @@ void test_vector() {
   assert(v5 == v8 && v8 == v9);
   assert(v1 != v2);
   assert(v10.mag() == 1.0 && v1 / v1.mag() == v10);
+  assert(v11 == Vector(-1.0, 1.0, -1.0));
 }
 
 void test_sphere_intersect() {
