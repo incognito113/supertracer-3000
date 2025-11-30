@@ -4,20 +4,24 @@
 #include "math/ray.hpp"
 #include "scene/scene.hpp"
 
+// Forward declaration
+class Renderer;
+
 // Responsible for tracing rays through the scene and computing pixel colors
 class Tracer {
- public:
+ private:
   const Scene& scene;
 
- private:
-  const Color traceRay(const Ray& ray, int depth = 6) const;
-  // i know this is bad to have the 6 here too but honestly... it was giving me so much headaches trying to get it from scene that idk. if you can fix that, please do.
+  const Color traceRay(const Scene& scene, const Ray& ray, int depth) const;
+  const Color computeLighting(const Scene& scene, const HitInfo& hitInfo,
+                              int depth) const;
 
  public:
-  explicit Tracer(const Scene& sc) : scene(sc) {}
-  Tracer(const Tracer& other) = default;
+  Tracer(const Scene& sc) : scene(sc) {}
 
-  const std::vector<Color> render_pixels() const;
+  std::vector<Color> render_pixels(const Scene& scene);
 
   ~Tracer() = default;
+
+  friend class Renderer;
 };

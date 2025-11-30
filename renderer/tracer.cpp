@@ -1,130 +1,118 @@
 #include "tracer.hpp"
+
+#include <vector>
+
 #include "scene/scene.hpp"
 
-#include <fstream>
-#include <cmath>
-#include <limits>
+// Trace a ray through the scene and return the resulting color
+const Color Tracer::traceRay(const Scene& scene, const Ray& ray,
+                             int depth) const {
+  // Check for intersections with all shapes in the scene
+  std::optional<HitInfo> closestHit;
+  double closest_t = std::numeric_limits<double>::max();
 
-#define INFINITY std::numeric_limits<double>::infinity()
-
-template <typename AnyShape>
-// Trace a ray through the scene and return the resulting hit info
-const Color Tracer::traceRay(const Ray& ray, const int depth) const {
-  // gets the object we're intersecting with first
-  double closestHit = INFINITY; // does this work??? i hope so
-  Vector distanceVector;
-  double euclideanDistance;
-  HitInfo currHitInfo;
-  HitInfo bestHitInfo;
-
-  for (const AnyShape& currShape : this->scene->shapes) {
-    currHitInfo = currShape.intersects(ray);
-    if (currHitInfo != std::nullopt) {
-      distanceVector = (this->scene->camera).subtract(currHitInfo->pos);
-      euclideanDistance = distanceVector.mag();
-      if (euclideanDistance < closestHit) {
-        bestHitInfo = currHitInfo;
-        closestHit = euclideanDistance;
-      }
+  for (const std::unique_ptr<Shape>& shape : scene.shapes) {
+    std::optional<HitInfo> hitOpt = shape->intersects(ray);
+    if (hitOpt.has_value() && hitOpt->t < closest_t) {
+      closest_t = hitOpt->t;
+      closestHit.emplace(hitOpt.value());
     }
   }
 
-  // if the ray didn't hit anything, set it to be the background color
-  // ooh i have an idea what if we make it so that we can set background images wouldn't that be cool? like set every background pixel to 0 0 0 and then go through the ppm and matte over it with an image
-  // ohhhh and then we could include a couple of background images pre-loaded and let them pick one of them or put in their own image or pass it a flat color... i want to do this
-  if (closestHit == INFINITY) {
-    return this->scene->background;
+  if (closestHit.has_value()) {
+    return computeLighting(scene, closestHit.value(), depth);
+  } else {
+    return scene.getBackground();
   }
+}
 
-  //else, we have to calculate the lighting for the object we hit
+// Compute lighting for all lights at the hit point
+const Color Tracer::computeLighting(const Scene& scene, const HitInfo& hitInfo,
+                                    int depth) const {
+  // Convenience variables
+  const Vector i = hitInfo.pos;
+  const Vector d = hitInfo.ray.dir;
+  const Vector n = hitInfo.normal;
+  const Material* mat = hitInfo.material;
 
-  // get ambient light per handout math
-  double ambientFactor = this->scene->ambientLight * (1 - hitInfo->material->reflectivity);
-  Color ambientLight = hitInfo->material->diffuse * ambientFactor;
+  // Ambient light contribution (doesn't depend on lights)
+  const double ambFactor = scene.getAmbientLight() * (1 - mat->reflectivity);
+  const Color ambient = mat->color * ambFactor;
 
+  Color finalColor = ambient;
 
-  // do diffuse and specular together bc they both need line of sight to the light source
-  Color diffuseLight(0, 0, 0);
-  Color specularLight(0, 0, 0);
-  Vector honestlyIDK;
+  for (const Light& light : scene.lights) {
+    bool inShadow = false;
 
-  Vector vectToLight;
-  double distToLight;
-  Ray lightPath
-  bool blocked;
-  Vector distanceVector;
-  double euclideanDistance;
-  HitInfo currHitInfo;
-  for (const Light& currLight : this->scene->lights) {
-    // get the vector between the light and the hit point
-    vectToLight = (hitInfo->pos).subtract(currLight->position); // i hope this subtract is in the right direction
-    distToLight = lightHitpointPath.mag();
+    // Shadow check (cast shadow ray toward light)
+    for (const std::unique_ptr<Shape>& shape : scene.shapes) {
+      const Vector toLight = light.position - i;
+      // Offset origin slightly to avoid self-intersection
+      const Ray shadowRay(i, toLight);
+      std::optional<HitInfo> shadowHitOpt = shape->intersects(shadowRay);
 
-    // make a ray between the light and hit point
-    lightPath = Ray(hitInfo->pos, vectToLight);
-
-    // crunch every object to see if it's blocking the path between the light and the hit point
-    blocked = false;
-    for (const AnyShape& currShape : this->scene->shapes) {
-      currHitInfo = currShape.intersects(lightPath);
-      if (currHitInfo != std::nullopt) {
-        distanceVector = (this->scene->camera).subtract(currHitInfo->pos);
-        euclideanDistance = distanceVector.mag();
-        // if the object is in between the light and hit point, we know it's blocked and give up
-        // if it intersects the ray but is behind the light, we don't care
-        if (euclideanDistance < distToLight) {
-          blocked = true;
+      if (shadowHitOpt.has_value()) {
+        const double distToLightSq = toLight.magSq();
+        const double tSq = shadowHitOpt->t * shadowHitOpt->t;
+        if (tSq < distToLightSq && shadowHitOpt->t > Shape::EPS) {
+          inShadow = true;
           break;
         }
       }
     }
 
-    if (blocked) {
-      continue;
+    const Vector lt = (light.position - i).norm();
+
+    // Diffuse light contribution
+    Color diffuse;
+    if (!inShadow) {
+      const double diffFactor =
+          (1 - ambFactor) * (1 - mat->reflectivity) * std::max(0.0, n * lt);
+      diffuse = mat->color * light.color * diffFactor;
     }
 
-    normalizedToLight = vectToLight.norm();
-    originalRayVect = (this->camera->position).subtract(hitInfo->pos) // again make sure i have the subtraction the right way around
+    // Specular light contribution
+    Color specular;
+    if (!inShadow) {
+      const Vector h = (lt - d.norm()).norm();
+      specular = mat->specular * mat->specularFactor *
+                 std::pow(std::max(0.0, n * h), mat->shininess) * light.color;
+    }
 
-    // more fucky math copied from the handout
-    diffuseLight += (1 - ambientFactor) * (1 - hitInfo->material->reflectivity) * max(0, (hitInfo->normal).norm().dot(normalizedToLight)) * hitInfo->material->diffuse;
+    // Reflective contribution
+    Color reflective;
+    if (depth > 0 && mat->reflectivity > 0) {
+      const Vector reflectDir = d - 2.0 * d.proj(n);
+      const Ray ray(i, reflectDir);
+      const Color reflectColor = traceRay(scene, ray, depth - 1);
+      reflective = (1 - ambFactor) * mat->reflectivity * reflectColor;
+    }
 
-    honestlyIDK = normalizedToLight + -(originalRayVect.norm());
-    honestlyIDK = honestlyIDK.norm();
-    specularLight += hitInfo->material->specular * pow(max(0, honestlyIDK.dot((hitInfo->normal).norm())), hitInfo->material->shininess) * Color(255, 255, 255)
-    // ewwwww
+    // Sum contributions
+    finalColor = finalColor + diffuse + specular + reflective;
   }
 
-  // get the stuff for the reflected ray
-  // i don't know if i understood this so maybe i did it wrong... idk
-  Color reflectedLight;
-
-  if (depth == 0) {
-    reflectedLight = 0;
-  }
-  else {
-    Vector reflectedVector = originalRayVect - (2 * originalRayVect.proj(hitInfo->normal));
-    Ray reflectedRay(hitInfo->pos, reflectedVector);
-    Color reflectedColor;
-    reflectedColor = this->traceRay(reflectedRay, depth - 1)
-
-    reflectedLight = (1 - ambientFactor) * hitInfo->material->reflectivity * reflectedColor;
-  }
-
-  return (ambientLight + diffuseLight + specularLight + reflectedLight);
+  return finalColor;
 }
 
-const std::vector<Color> Tracer::render_pixels() const {
-  std::vector<Color> pixels;
-  pixels.reserve(scene.getWidth() * scene.getHeight());
-  Ray currentRay;
-  Color objectColor;
-  for (int y = 0; y < scene.getHeight(); y++) {
-    for (int x = 0; x < scene.getWidth(); x++) {
-      currentRay = camera.getRay(col, row, scene.getWidth(), scene.getHeight());
-      objectColor = this.traceRay(currentRay);
-      pixels.push_back(objectColor);
+// Expects preallocated pixels vector
+// Updates pixels in place by adding new rays
+// If simple, performs uniform sampling with 1 ray per pixel
+std::vector<Color> Tracer::render_pixels(const Scene& scene) {
+  std::vector<Color> pixels(scene.getWidth() * scene.getHeight());
+
+  const int w = scene.getWidth();
+  const int h = scene.getHeight();
+  const int refl = scene.reflections();
+  const Camera camera = scene.getCamera();
+
+  for (int j = 0; j < h; ++j) {
+    for (int i = 0; i < w; ++i) {
+      const Ray ray = camera.ray(i + 0.5, j + 0.5, w, h);
+      const Color color = traceRay(scene, ray, refl);
+      pixels[j * w + i] = color;
     }
   }
+
   return pixels;
 }
