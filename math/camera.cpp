@@ -3,29 +3,32 @@
 #include "ray.hpp"
 #include "vector.hpp"
 
-Ray Camera::getRay(const int i, const int j, const int width,
-                   const int height) const {
-  // Normalize corrdinates to center of pixel
-  double u = (i + 0.5) / width;
-  double v = (j + 0.5) / height;
+// Generate a ray from the camera through pixel (i, j)
+// i, j can be fractional for anti-aliasing
+Ray Camera::ray(const double i, const double j, const int width,
+                const int height) const {
+  const double w = static_cast<double>(width);
+  const double h = static_cast<double>(height);
 
-  // Compute size of "screen" based on fov
+  // Start at top-left corner of pixel
+  double u = i / w;
+  double v = j / h;
+
+  // Screen half-sizes
   double halfHeight = tan(fov * 0.5 * M_PI / 180.0);
-  double halfWidth = (width / (double)height) * halfHeight;
+  double halfWidth = (w / h) * halfHeight;
 
-  // Camera basis vectors
-  Vector right = direction.cross(Vector(0, 1, 0)).norm();
+  // Camera basis (Y up)
+  Vector right = direction.cross(Vector(0, 0, 1)).norm();
   Vector up = right.cross(direction).norm();
-  Vector forward = direction.norm();
 
-  // Image plane coordinates relative to camera
-  double x = (2 * u - 1) * halfWidth;
-  double y = (1 - 2 * v) * halfHeight;
-  double z = 1;  // distance of screen from camera
+  // Image plane coordinates
+  double x = (2.0 * u - 1.0) * halfWidth;
+  double y = (1.0 - 2.0 * v) * halfHeight;
 
-  // Map to world coordinates
-  Vector worldPoint = position + x * right + y * up + z * forward;
-  Vector dir = (worldPoint - position).norm();
+  // Place image plane at distance 1 from camera position
+  Vector worldPoint = position + direction + right * x + up * y;
+  Vector rayDir = (worldPoint - position).norm();
 
-  return Ray(position, dir);
+  return Ray(position, rayDir);
 }
