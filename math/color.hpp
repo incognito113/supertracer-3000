@@ -1,34 +1,48 @@
 #pragma once
 
+#include <algorithm>
 #include <iostream>
 
-// Represents an RGB color: components in [0, 1]
+#include "vector.hpp"
+
 class Color {
  private:
-  double r;
-  double g;
-  double b;
-  static constexpr double EPS = 1e-9;
+  Vector v;  // internal storage for RGB
 
  public:
-  Color() : r(0), g(0), b(0) {};
-  Color(double red, double green, double blue) : r(red), g(green), b(blue) {};
+  // Constructors
+  Color() : v(0, 0, 0) {}
+  Color(double r, double g, double b) : v(r, g, b) {}
   Color(int red, int green, int blue);
-  Color(Color const& other) : r(other.r), g(other.g), b(other.b) {};
+  Color(const Vector& vec) : v(vec) {}
 
-  Color add(const Color& other) const;
-  Color mult(const Color& other) const;
-  Color scale(double factor) const;
-  std::string get255String() const;
+  // Accessors
+  double r() const { return v.x(); }
+  double g() const { return v.y(); }
+  double b() const { return v.z(); }
 
-  Color operator=(const Color& other);
-  Color operator+(const Color& other) const;
+  // Clamping (returns new Color)
+  Color clamp() const;
+  std::array<u_char, 3> getBytes() const;
+
+  // Arithmetic operators
+  Color operator+(const Color& other) const { return Color(v + other.v); }
+  Color operator-(const Color& other) const { return Color(v - other.v); }
+  Color operator*(double scalar) const { return Color(v * scalar); }
   Color operator*(const Color& other) const;
-  Color operator*(double factor) const;
-  bool operator==(const Color& other) const;
-  bool operator!=(const Color& other) const;
+  Color operator/(double scalar) const { return Color(v / scalar); }
 
-  friend std::ostream& operator<<(std::ostream& os, const Color& color);
+  Color& operator+=(const Color& other);
+  Color& operator-=(const Color& other);
+  Color& operator*=(double scalar);
+  Color& operator/=(double scalar);
+  bool operator==(const Color& other) const { return v == other.v; }
+  bool operator!=(const Color& other) const { return v != other.v; }
 
-  ~Color() = default;
+  double mag() const { return v.mag(); }
+
+  friend std::ostream& operator<<(std::ostream& os, const Color& c);
+  friend inline Color operator*(double scalar, const Color& color) {
+    return color * scalar;
+  }
 };
