@@ -1,17 +1,46 @@
-#include "io/image.hpp"
-#include "renderer/tracer.hpp"
+#include <fstream>
+#include <memory>
 
-const std::string OUTPUT_FILE = "output.ppm";
+#include "io/image.hpp"
+#include "scene/scene.hpp"
+#include "shapes/plane.hpp"
+#include "shapes/sphere.hpp"
+
+// Leave blank to test file dialog
+const std::string OUTPUT_FILENAME = "output.ppm";
+// const std::string OUTPUT_FILENAME = "";
 
 int main() {
   Scene scene(512, 512, 6);
-  scene.setBackground(135, 206, 235);  // Sky blue
-  // Need to specify properties in the future
 
-  Tracer tracer{scene};
-  Image image{tracer};
+  scene.setBackground(135, 206, 235);
+  scene.setCamera(Vector(0.5, -1.0, 0.5), Vector(0, 1, 0), 60.0);
+  scene.setAmbientLight(0.2);
+  scene.addLight(Vector(0, -0.5, 1.0), Color(255, 255, 255));
 
-  image.render(OUTPUT_FILE);
+  scene.addShape(std::make_unique<Plane>(Vector(0, 0, 0), Vector(0, 0, 1),
+                                         (Material){
+                                             .color = Color(255, 255, 255),
+                                             .reflectivity = 0.0,
+                                         }));
+  scene.addShape(std::make_unique<Sphere>(Vector(0.25, 0.45, 0.4), 0.4,
+                                          (Material){
+                                              .color = Color(255, 0, 0),
+                                              .reflectivity = 0.3,
+                                          }));
+  scene.addShape(std::make_unique<Sphere>(Vector(1.0, 1.0, 0.25), 0.25,
+                                          (Material){
+                                              .color = Color(0, 255, 0),
+                                              .reflectivity = 0.0,
+                                          }));
+  scene.addShape(std::make_unique<Sphere>(Vector(0.8, 0.3, 0.15), 0.15,
+                                          (Material){
+                                              .color = Color(0, 0, 255),
+                                              .reflectivity = 0.7,
+                                          }));
+
+  Image image{scene};
+  image.save();
 
   return 0;
 }
