@@ -16,10 +16,10 @@ std::optional<HitInfo> Plane::intersects(const Ray& ray) const {
 
   double t = (point - ray.orig).dot(normal) / denom;
   // Negative t, no intersection
-  if (t < 0) {
+  if (t < Shape::EPS) {
     return std::nullopt;
   }
 
   Vector hitPoint = ray.at(t);
-  return HitInfo(hitPoint, normal, t, &material);
+  return HitInfo(hitPoint, normal, ray, t, &material);
 }
