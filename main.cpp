@@ -40,7 +40,7 @@ int main() {
                                           }));
 
   Image image{scene};
-  image.save();
+  image.save(OUTPUT_FILENAME);
 
   return 0;
 }
