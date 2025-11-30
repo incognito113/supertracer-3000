@@ -2,44 +2,58 @@
 
 #include <iostream>
 
+// Forward declaration
+class Camera;
+
+// Represents a 3D vector with common vector operations
 class Vector {
-private:
-    static constexpr double EPS = 1e-9;
-    double x, y, z;
+ protected:
+  // Small error tolerance for floating point comparison
+  static constexpr double EPS = 1e-5;
+  double _x;
+  double _y;
+  double _z;
 
-public:
-    // Constructors
-    Vector() : x(0), y(0), z(0) {}
-    Vector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {}
+ public:
+  // Default constructor creates zero vector
+  Vector() : _x(0), _y(0), _z(0) {};
+  Vector(double x, double y, double z) : _x(x), _y(y), _z(z) {};
 
-    // Basic vector operations
-    Vector add(const Vector& other) const;
-    Vector subtract(const Vector& other) const;
-    Vector scale(double scalar) const;
+  // Accessors
+  double x() const { return _x; }
+  double y() const { return _y; }
+  double z() const { return _z; }
 
-    double dot(const Vector& other) const;
-    double mag() const;
-    double magSq() const;
-    Vector norm() const;
+  Vector add(const Vector& other) const;
+  Vector subtract(const Vector& other) const;
+  Vector scale(double scalar) const;
+  double dot(const Vector& other) const;
+  double mag() const;
+  double magSq() const;
+  Vector norm() const;
+  Vector proj(const Vector& other) const;
+  Vector cross(const Vector& other) const;
 
-    // Extra features
-    Vector proj(const Vector& other) const;    // projection
-    Vector cross(const Vector& other) const;   // cross product
+  // Operator overloads
+  Vector operator=(const Vector& other);
+  Vector operator+(const Vector& other) const;
+  Vector operator-(const Vector& other) const;
+  Vector operator-() const;
+  Vector operator*(double scalar) const;
+  double operator*(const Vector& other) const;
+  Vector operator/(double scalar) const;
+  Vector& operator+=(const Vector& other);
+  Vector& operator-=(const Vector& other);
+  Vector& operator*=(double scalar);
+  Vector& operator/=(double scalar);
+  bool operator==(const Vector& other) const;
+  bool operator!=(const Vector& other) const;
+  double operator[](int index) const;
 
-    // Operator overloads
-    Vector& operator=(const Vector& other); 
-    Vector operator+(const Vector& other) const;
-    Vector operator-(const Vector& other) const;
-    Vector operator-() const;
-    Vector operator*(double scalar) const; 
-    double operator*(const Vector& other) const;
-    Vector operator/(double scalar) const;
+  friend std::ostream& operator<<(std::ostream& os, const Vector& vec);
+  friend class Camera;
 
-    bool operator==(const Vector& other) const;
-    bool operator!=(const Vector& other) const;
-
-    friend std::ostream& operator<<(std::ostream& os, const Vector& v);
+  ~Vector() = default;
 };
 
-// scalar * Vector
 Vector operator*(double scalar, const Vector& vec);
