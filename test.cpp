@@ -10,6 +10,7 @@
 #include "math/vector.hpp"
 #include "shapes/plane.hpp"
 #include "shapes/sphere.hpp"
+#include "shapes/triangle.hpp"
 
 void test_color() {
   std::cout << "Testing Color class..." << std::endl;
@@ -107,11 +108,41 @@ void test_plane_intersect() {
   assert(!hitInfoOpt2.has_value());
 }
 
+void test_triangle_intersect() {
+  std::cout << "Testing Triangle intersection..." << std::endl;
+
+  Material mat{};
+
+  Vector v1(0.0, 0.0, 0.0);
+  Vector v2(1.0, 0.0, 0.0);
+  Vector v3(0.0, 1.0, 0.0);
+
+  Triangle tri(v1, v2, v3, mat);
+
+  Ray ray1(Vector(0.25, 0.25, 1.0), Vector(0.0, 0.0, -1.0));
+  auto hit1 = tri.intersects(ray1);
+
+  assert(hit1.has_value());
+  assert(std::abs(hit1->t - 1.0) < 1e-6);
+  assert(hit1->pos == Vector(0.25, 0.25, 0.0));
+  assert(hit1->normal == Vector(0.0, 0.0, 1.0) ||
+         hit1->normal == Vector(0.0, 0.0, -1.0));  
+
+  Ray ray2(Vector(2.0, 2.0, 1.0), Vector(0.0, 0.0, -1.0));
+  auto hit2 = tri.intersects(ray2);
+  assert(!hit2.has_value());
+
+  Ray ray3(Vector(0.2, 0.2, 1.0), Vector(1.0, 0.0, 0.0));
+  auto hit3 = tri.intersects(ray3);
+  assert(!hit3.has_value());
+}
+
 int main() {
   test_color();
   test_vector();
   test_sphere_intersect();
   test_plane_intersect();
+  test_triangle_intersect(); 
 
   std::cout << "All tests passed!" << std::endl;
 

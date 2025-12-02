@@ -5,15 +5,16 @@
 #include "math/vector.hpp"
 #include "shape.hpp"
 
-// Represents an infinite plane in 3D space
+// Represents an infinite plane
 class Plane : public Shape {
- public:
-  const Vector point;
-  const Vector normal;
+public:
+    Vector point;   // a point on plane
+    Vector normal;  // normalized normal vector
 
-  Plane(const Vector& pt, const Vector& norm, const Material& mat)
-      : Shape(mat), point(pt), normal(norm.norm()) {}
+    Plane(const Vector& p, const Vector& n, const Material& mat)
+        : Shape(mat), point(p), normal(n.norm()) {}
 
-  virtual std::optional<HitInfo> intersects(const Ray& ray) const override;
-  Plane* clone() const override { return new Plane(*this); }
+    std::optional<HitInfo> intersects(const Ray& ray) const override;
+
+    Plane* clone() const override { return new Plane(*this); }
 };
