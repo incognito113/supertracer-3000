@@ -5,15 +5,15 @@
 #include "math/vector.hpp"
 #include "shape.hpp"
 
-class Sphere : public Shape {
-public:
-    Vector center;
-    double radius;
+// Represents a sphere in 3D space
+class Sphere : public BoundedShape {
+ public:
+  const Vector center;
+  const double radius;
 
-    Sphere(const Vector& c, double r, const Material& mat)
-        : Shape(mat), center(c), radius(r) {}
+  Sphere(const Vector& cen, double r, const Material& mat);
 
-    std::optional<HitInfo> intersects(const Ray& ray) const override;
+  std::optional<HitInfo> intersects(const Ray& ray) const override;
 
-    Sphere* clone() const override { return new Sphere(*this); }
+  Sphere* clone() const override { return new Sphere(*this); }
 };
