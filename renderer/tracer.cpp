@@ -189,7 +189,7 @@ void Tracer::refinePixels(Pixels& pixels) {
         pixels.pxSamples[i]++;
       }
       // Mark row as ready
-      pixels.rowReady[row] = true;
+      pixels.rowReady[row].store(true, std::memory_order_release);
     });
   }
 }

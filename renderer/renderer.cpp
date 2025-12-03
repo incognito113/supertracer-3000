@@ -11,7 +11,7 @@ void Renderer::updateImage8() {
   const int h = scene.getHeight();
 
   for (int y = 0; y < h; ++y) {
-    if (backPixels.rowReady[y]) {
+    if (backPixels.rowReady[y].load(std::memory_order_acquire)) {
       for (int x = 0; x < w; ++x) {
         const int i = y * w + x;
         const Color& col = backPixels.pxColors[i] /
@@ -22,7 +22,7 @@ void Renderer::updateImage8() {
         image8[rIndex + 1] = bytes[1];
         image8[rIndex + 2] = bytes[2];
       }
-      backPixels.rowReady[y] = false;
+      backPixels.rowReady[y].store(false, std::memory_order_release);
     }
   }
 }
@@ -133,7 +133,9 @@ void Renderer::run() {
       std::fill(backPixels.pxColors.begin(), backPixels.pxColors.end(),
                 Color());
       std::fill(backPixels.pxSamples.begin(), backPixels.pxSamples.end(), 0);
-      std::fill(backPixels.rowReady.begin(), backPixels.rowReady.end(), false);
+      for (int y = 0; y < h; ++y) {
+        backPixels.rowReady[y].store(false, std::memory_order_release);
+      }
     }
 
     // Make sure tracer isn't overloaded with tasks
