@@ -34,8 +34,8 @@ bool importMesh(const Scene scene, const std::string fileName, const Material ma
             // gets all of the vertices in the current face and loads them into their own vector
             faceVertices.clear();
             getLine(currentLine, vertexIndex, ' '); // skips the leading 'f'
-            while () {
-                getLine(currentLine, vertexIndex, ' '); // next block of vertex/texture/normal
+            while (getLine(currentLine, vertexIndex, ' ')) {
+                // while loop gets next block of vertex/texture/normal
                 getLine(vertexIndex, vextexIndex, '/'); // gets just the vertex from the block (we don't need anything else)
                 faceVertices.push_back(vertexList[(int) vertexIndex]); // adds the indexed vertex the list of vertices for this face
             }
