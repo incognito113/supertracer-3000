@@ -8,15 +8,17 @@ class Camera;
 // Represents a 3D vector with common vector operations
 class Vector {
  protected:
-  // Small error tolerance for floating point comparison
-  static constexpr double EPS = 1e-5;
   double _x;
   double _y;
   double _z;
 
  public:
+  // Small error tolerance for doubleing point comparison
+  static constexpr double EPS = 1e-12;
+
   // Default constructor creates zero vector
   Vector() : _x(0), _y(0), _z(0) {};
+  Vector(double val) : _x(val), _y(val), _z(val) {};
   Vector(double x, double y, double z) : _x(x), _y(y), _z(z) {};
 
   // Accessors
@@ -33,6 +35,9 @@ class Vector {
   Vector norm() const;
   Vector proj(const Vector& other) const;
   Vector cross(const Vector& other) const;
+
+  Vector min(const Vector& other) const;
+  Vector max(const Vector& other) const;
 
   // Operator overloads
   Vector operator=(const Vector& other);
@@ -51,7 +56,6 @@ class Vector {
   double operator[](int index) const;
 
   friend std::ostream& operator<<(std::ostream& os, const Vector& vec);
-  friend class Camera;
 
   ~Vector() = default;
 };

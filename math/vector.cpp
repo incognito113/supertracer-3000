@@ -55,9 +55,22 @@ Vector Vector::proj(const Vector& other) const {
   return other.scale(scalar);
 }
 
+// Cross product of two vectors
 Vector Vector::cross(const Vector& other) const {
   return Vector(_y * other._z - _z * other._y, _z * other._x - _x * other._z,
                 _x * other._y - _y * other._x);
+}
+
+// Component-wise minimum
+Vector Vector::min(const Vector& other) const {
+  return Vector(std::min(_x, other._x), std::min(_y, other._y),
+                std::min(_z, other._z));
+}
+
+// Component-wise maximum
+Vector Vector::max(const Vector& other) const {
+  return Vector(std::max(_x, other._x), std::max(_y, other._y),
+                std::max(_z, other._z));
 }
 
 // ----- Overloaded Operators -----
@@ -144,9 +157,8 @@ double Vector::operator[](int index) const {
       return _y;
     case 2:
       return _z;
-    default:
-      throw std::out_of_range("Index out of range for Vector");
   }
+  return 0.0;  // Default case (should not happen)
 }
 
 // Printing: Vector(x, y, z)

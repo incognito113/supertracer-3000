@@ -1,5 +1,7 @@
 #include "camera.hpp"
 
+#include <numbers>
+
 #include "ray.hpp"
 #include "vector.hpp"
 
@@ -31,4 +33,38 @@ Ray Camera::ray(const double i, const double j, const int width,
   Vector rayDir = (worldPoint - position).norm();
 
   return Ray(position, rayDir);
+}
+
+void Camera::setDir(const Vector& dir) {
+  direction = dir.norm();
+  // Update yaw and pitch based on new direction
+  pitch = asin(direction.z());
+  yaw = atan2(direction.y(), direction.x());
+}
+
+// Rotate camera direction by Euler angles (given mouse movement deltas)
+void Camera::eulerRotate(int dx, int dy) {
+  yaw += dx * sensitivity;
+  pitch += dy * sensitivity;
+  // Clamp pitch to avoid flipping
+  pitch = std::clamp(pitch, -M_PI / 2.0 + 0.01, M_PI / 2.0 - 0.01);
+
+  // Calculate forward direction vector
+  Vector forward =
+      Vector(cos(pitch) * cos(yaw), cos(pitch) * sin(yaw), sin(pitch));
+
+  direction = forward.norm();
+}
+
+void Camera::movePosition(const Vector& delta) {
+  Vector right = direction.cross(Vector(0, 0, 1)).norm();
+  Vector up = right.cross(direction).norm();
+
+  position += right * delta.x() + up * delta.y() + direction * delta.z();
+}
+
+void Camera::zoom(double scroll) {
+  double factor = std::exp(-scroll * scrollSens);  // smooth
+  fov *= factor;
+  fov = std::clamp(fov, 20.0, 90.0);
 }
