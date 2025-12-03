@@ -5,20 +5,18 @@
 #include "math/vector.hpp"
 #include "shape.hpp"
 
-class Triangle : public Shape {
-public:
-    Vector v0, v1, v2;
-    Vector normal;
-    
-    Triangle(const Vector& a,
-             const Vector& b,
-             const Vector& c,
-             const Material& mat)
-        : Shape(mat), v0(a), v1(b), v2(c) {
-        normal = ((v1 - v0).cross(v2 - v0)).norm();
-    }
+// Represents a triangle in 3D space
+class Triangle : public BoundedShape {
+ public:
+  const Vector v0;
+  const Vector v1;
+  const Vector v2;
+  const Vector normal;
 
-    std::optional<HitInfo> intersects(const Ray& ray) const override;
+  Triangle(const Vector& a, const Vector& b, const Vector& c,
+           const Material& mat);
 
-    Triangle* clone() const override { return new Triangle(*this); }
+  std::optional<HitInfo> intersects(const Ray& ray) const override;
+
+  Triangle* clone() const override { return new Triangle(*this); }
 };
