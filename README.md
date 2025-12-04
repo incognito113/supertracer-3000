@@ -2,7 +2,13 @@
 
 Ray tracing project for CSCI 221
 
-make build: Generate all object files and ./main executable
+To install metal-cpp on mac, run:
+
+```console
+sudo mkdir -p /Library/Developer/metal-cpp && TMP=$(mktemp -d) && curl -L -o "$TMP/metal-cpp.zip" https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip && unzip -q "$TMP/metal-cpp.zip" -d "$TMP" && sudo cp -r "$TMP/metal-cpp/"* /Library/Developer/metal-cpp/ && rm -rf "$TMP"
+```
+
+make: Compile both main and test executables
 
 make main: Run main executable
 
