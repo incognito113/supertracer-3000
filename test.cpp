@@ -8,6 +8,7 @@
 #include "math/color.hpp"
 #include "math/ray.hpp"
 #include "math/vector.hpp"
+#include "shaders/metal.hpp"
 #include "shapes/plane.hpp"
 #include "shapes/sphere.hpp"
 #include "shapes/triangle.hpp"
@@ -126,7 +127,7 @@ void test_triangle_intersect() {
   assert(std::abs(hit1->t - 1.0) < 1e-6);
   assert(hit1->pos == Vector(0.25, 0.25, 0.0));
   assert(hit1->normal == Vector(0.0, 0.0, 1.0) ||
-         hit1->normal == Vector(0.0, 0.0, -1.0));  
+         hit1->normal == Vector(0.0, 0.0, -1.0));
 
   Ray ray2(Vector(2.0, 2.0, 1.0), Vector(0.0, 0.0, -1.0));
   auto hit2 = tri.intersects(ray2);
@@ -137,12 +138,28 @@ void test_triangle_intersect() {
   assert(!hit3.has_value());
 }
 
+void test_metal() {
+  std::cout << "Testing Metal integration..." << std::endl;
+
+  MetalCompute metalCompute;
+  const size_t dataSize = 16 * 1024 * 1024;
+  std::vector<float> data(dataSize, 5.0f);
+
+  metalCompute.runKernel("speedTest", data);
+
+  assert(data.size() == dataSize);
+  for (size_t i = 0; i < dataSize; ++i) {
+    assert(data[i] == 65536.0f + 5.0f);
+  }
+}
+
 int main() {
   test_color();
   test_vector();
   test_sphere_intersect();
   test_plane_intersect();
-  test_triangle_intersect(); 
+  test_triangle_intersect();
+  test_metal();
 
   std::cout << "All tests passed!" << std::endl;
 
