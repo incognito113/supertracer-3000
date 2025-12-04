@@ -35,11 +35,38 @@ Ray Camera::ray(const double i, const double j, const int width,
   return Ray(position, rayDir);
 }
 
+Vector Camera::right() const {
+  // If direction is too close to WORLD_UP or -WORLD_UP, use fallback
+  if (fabs(direction.dot(WORLD_UP)) > 0.99) {
+    return Vector(1, 0, 0);  // arbitrary but stable
+  }
+  return direction.cross(WORLD_UP).norm();
+}
+
+Vector Camera::up() const { return right().cross(direction).norm(); }
+
 void Camera::setDir(const Vector& dir) {
-  direction = dir.norm();
-  // Update yaw and pitch based on new direction
-  pitch = asin(direction.z());
-  yaw = atan2(direction.y(), direction.x());
+  if (dir.magSq() < Vector::EPS * Vector::EPS) {
+    throw std::invalid_argument("Camera direction cannot be zero vector");
+  }
+
+  Vector d = dir.norm();
+
+  // Check if vertical
+  if (std::fabs(d.x()) < Vector::EPS && std::fabs(d.y()) < Vector::EPS) {
+    // Looking straight up or down
+    yaw = d.z() > 0.5 ? -M_PI / 2.0 : M_PI / 2.0;
+    pitch = (d.z() > 0.5 ? M_PI / 2.0 : -M_PI / 2.0);
+  } else {
+    // Normal case
+    pitch = std::asin(d.z());
+    yaw = std::atan2(d.y(), d.x());
+  }
+
+  // Recompute direction from yaw + pitch
+  direction = Vector(std::cos(pitch) * std::cos(yaw),
+                     std::cos(pitch) * std::sin(yaw), std::sin(pitch))
+                  .norm();
 }
 
 // Rotate camera direction by Euler angles (given mouse movement deltas)
@@ -57,8 +84,8 @@ void Camera::eulerRotate(int dx, int dy) {
 }
 
 void Camera::movePosition(const Vector& delta) {
-  Vector right = direction.cross(Vector(0, 0, 1)).norm();
-  Vector up = right.cross(direction).norm();
+  Vector right = this->right();
+  Vector up = this->up();
 
   position += right * delta.x() + up * delta.y() + direction * delta.z();
 }

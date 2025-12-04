@@ -15,6 +15,10 @@ class Camera {
   double yaw = 0.0;
   double pitch = 0.0;
 
+  Vector WORLD_UP = Vector(0, 0, 1);
+  Vector right() const;
+  Vector up() const;
+
  public:
   Vector position;
   Vector direction;  // Must be normalized
