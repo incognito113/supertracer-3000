@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #if __has_include(<Metal/Metal.hpp>)
 #include <Metal/Metal.hpp>
