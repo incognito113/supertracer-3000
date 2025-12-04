@@ -7,6 +7,7 @@
 #include "math/vector.hpp"
 #include "shapes/triangle.hpp"
 #include "scene/scene.hpp"
+#include "mesh.hpp"
 
 bool importMesh(Scene* scene, const Vector& offset, const std::string fileName, const Material& material) {
     std::ifstream file(fileName);
