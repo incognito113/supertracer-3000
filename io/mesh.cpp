@@ -8,7 +8,7 @@
 #include "shapes/triangle.hpp"
 #include "scene/scene.hpp"
 
-bool importMesh(Scene& scene, const std::string fileName, const Material& material) {
+bool importMesh(Scene* scene, const std::string fileName, const Material& material) {
     std::ifstream file(fileName);
     if (!file.is_open()) {
         std::cerr << "Error: file does not exist!";
@@ -49,7 +49,7 @@ bool importMesh(Scene& scene, const std::string fileName, const Material& materi
             // splits the face (which can be any polygon) into a bunch of triangles
             splittingVertex = 2;
             while (splittingVertex < faceVertices.size()) {
-                scene.addTriangle(faceVertices[0], faceVertices[splittingVertex - 1], faceVertices[splittingVertex], material);
+                scene->addTriangle(faceVertices[0], faceVertices[splittingVertex - 1], faceVertices[splittingVertex], material);
                 splittingVertex ++;
             }
         }
