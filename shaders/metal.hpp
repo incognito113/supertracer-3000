@@ -1,4 +1,9 @@
 #pragma once
+
+#include <string>
+#include <vector>
+
+#if __has_include(<Metal/Metal.hpp>)
 #include <Metal/Metal.hpp>
 
 class MetalCompute {
@@ -14,3 +19,17 @@ class MetalCompute {
 
   ~MetalCompute();
 };
+
+#else
+
+// Empty class definition if Metal is not available
+class MetalCompute {
+ public:
+  MetalCompute() {
+    throw std::runtime_error("Metal is not available on this system!");
+  }
+  void runKernel(const std::string&, std::vector<float>&) {}
+  ~MetalCompute() {}
+};
+
+#endif

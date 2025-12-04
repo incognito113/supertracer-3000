@@ -1,12 +1,11 @@
-// Flag definitions to fix Metal build issues
-#define NS_PRIVATE_IMPLEMENTATION
-#define MTL_PRIVATE_IMPLEMENTATION
-
 #include "metal.hpp"
 
-#include <Metal/Metal.hpp>
 #include <iostream>
 #include <vector>
+
+#if __has_include(<Metal/Metal.hpp>)
+
+#include <Metal/Metal.hpp>
 
 // Initialize Metal device, library, and command queue
 MetalCompute::MetalCompute() {
@@ -68,3 +67,5 @@ MetalCompute::~MetalCompute() {
   lib->release();
   device->release();
 }
+
+#endif
