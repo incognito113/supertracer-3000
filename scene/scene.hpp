@@ -81,7 +81,7 @@ class Scene {
   void addSphere(const Vector& center, double radius, const Material& mat);
   void addTriangle(const Vector& a, const Vector& b, const Vector& c,
                    const Material& mat);
-  void importOBJ(const std::string fileName, const Material& material) {(void) importMesh(this, fileName, material);}
+  void importOBJ(const Vector& offset, const std::string fileName, const Material& material) {(void) importMesh(this, offset, fileName, material);}
 
   friend class Tracer;
   friend class Renderer;

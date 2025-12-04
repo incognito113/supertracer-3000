@@ -8,7 +8,7 @@
 #include "shapes/triangle.hpp"
 #include "scene/scene.hpp"
 
-bool importMesh(Scene* scene, const std::string fileName, const Material& material) {
+bool importMesh(Scene* scene, const Vector& offset, const std::string fileName, const Material& material) {
     std::ifstream file(fileName);
     if (!file.is_open()) {
         std::cerr << "Error: file does not exist!";
@@ -18,22 +18,25 @@ bool importMesh(Scene* scene, const std::string fileName, const Material& materi
     std::vector<Vector> faceVertices;
     std::stringstream currentLine;
     std::string currentLineString;
-    std::string coord1;
-    std::string coord2;
-    std::string coord3;
+    std::string x;
+    std::string y;
+    std::string z;
     std::stringstream vertexIndexStream;
     std::string vertexIndex;
     int splittingVertex;
+    Vector v1;
+    Vector v2;
+    Vector v3;
     while (std::getline(file, currentLineString)) {
         currentLine.clear();
         currentLine << currentLineString;
         if (currentLineString[0] == 'v') {
             // gets a vertex and adds it to our big list of vertices
-            std::getline(currentLine, coord1, ' '); // just the 'v' which we'll overwrite
-            std::getline(currentLine, coord1, ' '); // first coord
-            std::getline(currentLine, coord2, ' '); // second coord
-            std::getline(currentLine, coord3, ' '); // third coord
-            vertexList.push_back(Vector(std::stod(coord1), std::stod(coord2), std::stod(coord3)));
+            std::getline(currentLine, x, ' '); // just the 'v' which we'll overwrite
+            std::getline(currentLine, x, ' '); // first coord
+            std::getline(currentLine, y, ' '); // second coord
+            std::getline(currentLine, z, ' '); // third coord
+            vertexList.push_back(Vector(std::stod(x), std::stod(y), std::stod(z)));
         }
         else if (currentLineString[0] == 'f') {
             // gets all of the vertices in the current face and loads them into their own vector
@@ -49,7 +52,10 @@ bool importMesh(Scene* scene, const std::string fileName, const Material& materi
             // splits the face (which can be any polygon) into a bunch of triangles
             splittingVertex = 2;
             while (splittingVertex < faceVertices.size()) {
-                scene->addTriangle(faceVertices[0], faceVertices[splittingVertex - 1], faceVertices[splittingVertex], material);
+                v1 = faceVertices[0] + offset;
+                v2 = faceVertices[splittingVertex - 1] + offset;
+                v3 = faceVertices[splittingVertex ] + offset;
+                scene->addTriangle(v1, v2, v3, material);
                 splittingVertex ++;
             }
         }
