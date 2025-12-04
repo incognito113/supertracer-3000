@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "math/camera.hpp"
 #include "math/color.hpp"
@@ -11,7 +11,6 @@
 #include "scene/light.hpp"
 #include "shapes/plane.hpp"
 #include "shapes/shape.hpp"
-#include "io/mesh.hpp"
 
 // Forward declaration
 class Tracer;
@@ -81,7 +80,8 @@ class Scene {
   void addSphere(const Vector& center, double radius, const Material& mat);
   void addTriangle(const Vector& a, const Vector& b, const Vector& c,
                    const Material& mat);
-  void importOBJ(const Vector& offset, const std::string fileName, const Material& material) {(void) importMesh(this, offset, fileName, material);}
+  bool importOBJ(const Vector& offset, const std::string fileName,
+                 const Material& material);
 
   friend class Tracer;
   friend class Renderer;
