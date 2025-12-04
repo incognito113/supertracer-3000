@@ -65,6 +65,7 @@ class Scene {
   double getAmbientLight() const { return ambientLight; }
   const Color getBackground() const { return background; }
   const Camera getCamera() const { return camera; }
+  int shapeCount() const;
   void setAmbientLight(const double ambient);
   void setCamera(const Vector pos, const Vector dir, const double fovDeg);
   void setCameraPos(const Vector pos);
@@ -81,7 +82,7 @@ class Scene {
   void addTriangle(const Vector& a, const Vector& b, const Vector& c,
                    const Material& mat);
   bool importOBJ(const Vector& offset, const std::string fileName,
-                 const Material& material);
+                 const double scale, const Material& material);
 
   friend class Tracer;
   friend class Renderer;

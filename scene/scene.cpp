@@ -60,3 +60,7 @@ void Scene::addTriangle(const Vector& a, const Vector& b, const Vector& c,
                         const Material& mat) {
   bndedShapes.push_back(std::make_unique<Triangle>(a, b, c, mat));
 }
+
+int Scene::shapeCount() const {
+  return static_cast<int>(bndedShapes.size() + planes.size());
+}
