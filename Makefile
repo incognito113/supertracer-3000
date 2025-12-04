@@ -1,19 +1,5 @@
 # Requires metal-cpp headers installed at /Library/Developer/metal-cpp
 
-# Detect compiler
-CLANG := $(shell command -v clang++ 2>/dev/null)
-GCC := $(shell command -v g++ 2>/dev/null)
-
-ifeq ($(CLANG),)
-ifneq ($(GCC),)
-CC := $(GCC)
-else
-$(error No suitable C++ compiler found (clang++ or g++))
-endif
-else
-CC := $(CLANG)
-endif
-
 # Compilation flags based on mode
 MODE ?= fast
 BUILD_DIR = build
@@ -39,6 +25,13 @@ USE_METAL := 1
 endif
 endif
 endif
+endif
+
+# Select compiler based on OS
+ifeq ($(IS_MAC),Darwin)
+CC := clang++
+else
+CC := g++
 endif
 
 # Compiler and linker flags
