@@ -74,7 +74,13 @@ METAL_LIB :=
 endif
 
 # Source files: find all .cpp files
-SRCS := $(shell find . -type f -name '*.cpp' -print)
+ifeq ($(USE_METAL),1)
+# Exclude shaders/metal_dummy.cpp when Metal is enabled
+SRCS := $(shell find . -type f -name '*.cpp' ! -name 'metal_dummy.cpp' -print)
+else
+# Exclude shaders/metal.cpp when Metal is disabled
+SRCS := $(shell find . -type f -name '*.cpp' ! -name 'metal.cpp' -print)
+endif
 
 # Convert sources to build/*.o with mirrored directory structure
 OBJS := $(patsubst ./%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
