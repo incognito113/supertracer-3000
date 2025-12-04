@@ -4,6 +4,8 @@
 #include <queue>
 #include <thread>
 #include <vector>
+#include <condition_variable>
+#include <mutex>
 
 // Simple thread pool for parallel task execution
 class ThreadPool {

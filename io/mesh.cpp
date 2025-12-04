@@ -1,5 +1,3 @@
-/*
-
 #include <vector>
 #include <string>
 #include <fstream>
@@ -51,5 +49,3 @@ bool importMesh(const Scene& scene, const std::string fileName, const Material& 
     }
     return true;
 }
-
-*/
