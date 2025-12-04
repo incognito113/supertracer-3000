@@ -11,9 +11,14 @@ class Triangle : public BoundedShape {
   const Vector v0;
   const Vector v1;
   const Vector v2;
-  const Vector normal;
+  const Vector n0;
+  const Vector n1;
+  const Vector n2;
 
   Triangle(const Vector& a, const Vector& b, const Vector& c,
+           const Material& mat);
+  Triangle(const Vector& a, const Vector& b, const Vector& c,
+           const Vector& normalA, const Vector& normalB, const Vector& normalC,
            const Material& mat);
 
   std::optional<HitInfo> intersects(const Ray& ray) const override;
