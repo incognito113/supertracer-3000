@@ -17,25 +17,33 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
   }
 
   std::vector<Vector> vertexList;
+  std::vector<Vector> normalList;
   std::vector<Vector> faceVertices;
-  std::stringstream currentLine;
+  std::vector<Vector> faceNormals;
   std::string currentLineString;
+  std::stringstream currentLine;
   std::string x;
   std::string y;
   std::string z;
   std::stringstream vertexIndexStream;
   std::string vertexIndex;
-  int splittingVertex;
+  std::string textureIndex;  // unused but needed to parse correctly
+  std::string normalIndex;
   Vector v1;
   Vector v2;
   Vector v3;
+  Vector n1;
+  Vector n2;
+  Vector n3;
+  Vector zero;
 
   while (std::getline(file, currentLineString)) {
+    currentLine.str(currentLineString);
     currentLine.clear();
-    currentLine << currentLineString;
 
-    if (currentLineString.empty()) {
-      continue;  // skip empty lines
+    // Skip empty lines or lines with '#' comments
+    if (currentLineString.empty() || currentLineString[0] == '#') {
+      continue;
     }
 
     if (currentLineString[0] == 'v') {
@@ -44,31 +52,63 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
       std::getline(currentLine, x, ' ');  // first coord
       std::getline(currentLine, y, ' ');  // second coord
       std::getline(currentLine, z, ' ');  // third coord
-      vertexList.push_back(Vector(std::stod(x), std::stod(y), std::stod(z)));
+
+      if (currentLineString[1] == 'n') {
+        // Normal vector ('vn')
+        normalList.push_back(Vector(std::stod(x), std::stod(y), std::stod(z)));
+      } else if (currentLineString[1] == ' ') {
+        // Regular vertex ('v ')
+        vertexList.push_back(Vector(std::stod(x), std::stod(y), std::stod(z)));
+      }
     } else if (currentLineString[0] == 'f') {
-      // gets all of the vertices in the current face and loads them into their
-      // own vector
+      // Gets all vertices in the current face and load them into faceVertices
       faceVertices.clear();
-      std::getline(currentLine, vertexIndex, ' ');  // skips the leading 'f'
+      faceNormals.clear();
+      std::getline(currentLine, vertexIndex, ' ');  // skip leading 'f'
+
       while (std::getline(currentLine, vertexIndex, ' ')) {
         vertexIndexStream.clear();
         vertexIndexStream << vertexIndex;
-        // while loop gets next block of vertex/texture/normal
-        std::getline(vertexIndexStream, vertexIndex,
-                     '/');  // gets just the vertex from the block (we don't
-                            // need anything else)
-        faceVertices.push_back(
-            vertexList[stoi(vertexIndex) -
-                       1]);  // adds the indexed vertex the list
-                             // of vertices for this face
+
+        // Load up to the first '/' (if any)
+        std::getline(vertexIndexStream, vertexIndex, '/');
+        // Load up to the second '/' (if any) - we ignore texture coords
+        if (!std::getline(vertexIndexStream, textureIndex, '/')) {
+          textureIndex = "";
+        }
+        // Load normal index (if any)
+        if (!std::getline(vertexIndexStream, normalIndex, '/')) {
+          normalIndex = "";
+        }
+
+        // Add normal and vertex to this face
+        faceVertices.push_back(vertexList[stoi(vertexIndex) - 1]);
+        if (normalIndex.empty()) {
+          faceNormals.push_back(Vector());  // placeholder zero normal
+        } else {
+          faceNormals.push_back(normalList[stoi(normalIndex) - 1]);
+        }
       }
-      // splits the face (which can be any polygon) into a bunch of triangles
-      splittingVertex = 2;
+
+      // splits the polygonal face into triangles
+      int splittingVertex = 2;
       while ((size_t)splittingVertex < faceVertices.size()) {
+        // Load triangle vertices and normals
         v1 = faceVertices[0] * scale + offset;
         v2 = faceVertices[splittingVertex - 1] * scale + offset;
         v3 = faceVertices[splittingVertex] * scale + offset;
-        addTriangle(v1, v2, v3, material);
+
+        n1 = faceNormals[0];
+        n2 = faceNormals[splittingVertex - 1];
+        n3 = faceNormals[splittingVertex];
+
+        // If any normal is zero, don't use face normals
+        if (n1 == zero || n2 == zero || n3 == zero) {
+          addTriangle(v1, v2, v3, material);
+        } else {
+          addTriangle(v1, v2, v3, n1, n2, n3, material);
+        }
+
         splittingVertex++;
       }
     }
