@@ -78,4 +78,7 @@ MetalCompute::~MetalCompute() {
   queue->raw->release();
   lib->raw->release();
   device->raw->release();
+  delete queue;
+  delete lib;
+  delete device;
 }
