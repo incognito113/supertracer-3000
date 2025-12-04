@@ -139,6 +139,7 @@ void test_triangle_intersect() {
 }
 
 void test_metal() {
+#if __has_include(<Metal/Metal.hpp>)
   std::cout << "Testing Metal integration..." << std::endl;
 
   MetalCompute metalCompute;
@@ -151,6 +152,9 @@ void test_metal() {
   for (size_t i = 0; i < dataSize; ++i) {
     assert(data[i] == 65536.0f + 5.0f);
   }
+#else
+  std::cout << "Metal not available, skipping test." << std::endl;
+#endif
 }
 
 int main() {
