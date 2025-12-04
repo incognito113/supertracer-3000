@@ -81,6 +81,9 @@ class Scene {
   void addSphere(const Vector& center, double radius, const Material& mat);
   void addTriangle(const Vector& a, const Vector& b, const Vector& c,
                    const Material& mat);
+  void addTriangle(const Vector& a, const Vector& b, const Vector& c,
+                   const Vector& nA, const Vector& nB, const Vector& nC,
+                   const Material& mat);
   bool importOBJ(const Vector& offset, const std::string fileName,
                  const double scale, const Material& material);
 

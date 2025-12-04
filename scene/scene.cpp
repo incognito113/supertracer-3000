@@ -40,6 +40,7 @@ void Scene::addLight(const Vector pos, const Color color) {
   lights.push_back(Light{pos, color});
 }
 
+// Add plane (point, normal) to scene
 void Scene::addPlane(const Vector& point, const Vector& normal,
                      const Material& mat) {
   if (normal.magSq() < Vector::EPS * Vector::EPS) {
@@ -48,6 +49,7 @@ void Scene::addPlane(const Vector& point, const Vector& normal,
   planes.push_back(std::make_unique<Plane>(point, normal.norm(), mat));
 }
 
+// Add sphere (center, radius) to scene
 void Scene::addSphere(const Vector& center, double radius,
                       const Material& mat) {
   if (radius < Vector::EPS) {
@@ -56,9 +58,17 @@ void Scene::addSphere(const Vector& center, double radius,
   bndedShapes.push_back(std::make_unique<Sphere>(center, radius, mat));
 }
 
+// Add triangle (v0, v1, v2) to scene
 void Scene::addTriangle(const Vector& a, const Vector& b, const Vector& c,
                         const Material& mat) {
   bndedShapes.push_back(std::make_unique<Triangle>(a, b, c, mat));
+}
+
+// Add triangle with vertices and normals to scene
+void Scene::addTriangle(const Vector& a, const Vector& b, const Vector& c,
+                        const Vector& nA, const Vector& nB, const Vector& nC,
+                        const Material& mat) {
+  bndedShapes.push_back(std::make_unique<Triangle>(a, b, c, nA, nB, nC, mat));
 }
 
 int Scene::shapeCount() const {
