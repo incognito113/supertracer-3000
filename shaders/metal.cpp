@@ -1,46 +1,58 @@
+#define NS_PRIVATE_IMPLEMENTATION
+#define MTL_PRIVATE_IMPLEMENTATION
 #include "metal.hpp"
-
-#include <iostream>
-#include <vector>
-
-#if __has_include(<Metal/Metal.hpp>)
 
 #include <Metal/Metal.hpp>
 
+struct MetalDevice {
+  MTL::Device* raw;
+};
+struct MetalLibrary {
+  MTL::Library* raw;
+};
+struct MetalCommandQueue {
+  MTL::CommandQueue* raw;
+};
+
 // Initialize Metal device, library, and command queue
 MetalCompute::MetalCompute() {
-  device = MTL::CreateSystemDefaultDevice();
-  if (!device) throw std::runtime_error("No Metal device found!");
+  device = new MetalDevice();
+  lib = new MetalLibrary();
+  queue = new MetalCommandQueue();
+
+  device->raw = MTL::CreateSystemDefaultDevice();
+  if (!device->raw) throw std::runtime_error("No Metal device found!");
 
   NS::Error* error = nullptr;
-  lib = device->newLibrary(NS::String::string("build/shaders/Shader.metallib",
-                                              NS::UTF8StringEncoding),
-                           &error);
-  if (!lib)
+  lib->raw = device->raw->newLibrary(
+      NS::String::string("build/shaders/Shader.metallib",
+                         NS::UTF8StringEncoding),
+      &error);
+  if (!lib->raw)
     throw std::runtime_error(
         "Failed to load Metal library: " +
         std::string(error->localizedDescription()->utf8String()));
 
-  queue = device->newCommandQueue();
+  queue->raw = device->raw->newCommandQueue();
 }
 
 // Run a compute kernel with given name on the data buffer
 void MetalCompute::runKernel(const std::string& kernelName,
                              std::vector<float>& data) {
   NS::Error* error = nullptr;
-  auto func = lib->newFunction(
+  auto func = lib->raw->newFunction(
       NS::String::string(kernelName.c_str(), NS::UTF8StringEncoding));
-  auto pipeline = device->newComputePipelineState(func, &error);
+  auto pipeline = device->raw->newComputePipelineState(func, &error);
   if (!pipeline)
     throw std::runtime_error(
         "Failed to create pipeline: " +
         std::string(error->localizedDescription()->utf8String()));
 
-  auto buffer = device->newBuffer(data.size() * sizeof(float),
-                                  MTL::ResourceStorageModeShared);
+  auto buffer = device->raw->newBuffer(data.size() * sizeof(float),
+                                       MTL::ResourceStorageModeShared);
   memcpy(buffer->contents(), data.data(), data.size() * sizeof(float));
 
-  auto commandBuffer = queue->commandBuffer();
+  auto commandBuffer = queue->raw->commandBuffer();
   auto encoder = commandBuffer->computeCommandEncoder();
   encoder->setComputePipelineState(pipeline);
   encoder->setBuffer(buffer, 0, 0);
@@ -63,9 +75,7 @@ void MetalCompute::runKernel(const std::string& kernelName,
 
 // Clean up Metal resources
 MetalCompute::~MetalCompute() {
-  queue->release();
-  lib->release();
-  device->release();
+  queue->raw->release();
+  lib->raw->release();
+  device->raw->release();
 }
-
-#endif
