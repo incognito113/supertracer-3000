@@ -9,7 +9,7 @@
 #include "shapes/triangle.hpp"
 
 bool Scene::importOBJ(const Vector& offset, const std::string fileName,
-                      const Material& material) {
+                      const double scale, const Material& material) {
   std::ifstream file(fileName);
   if (!file.is_open()) {
     std::cerr << "Error: file does not exist!";
@@ -33,6 +33,11 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
   while (std::getline(file, currentLineString)) {
     currentLine.clear();
     currentLine << currentLineString;
+
+    if (currentLineString.empty()) {
+      continue;  // skip empty lines
+    }
+
     if (currentLineString[0] == 'v') {
       // gets a vertex and adds it to our big list of vertices
       std::getline(currentLine, x, ' ');  // just the 'v' which we'll overwrite
@@ -53,15 +58,16 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
                      '/');  // gets just the vertex from the block (we don't
                             // need anything else)
         faceVertices.push_back(
-            vertexList[stoi(vertexIndex)]);  // adds the indexed vertex the list
-                                             // of vertices for this face
+            vertexList[stoi(vertexIndex) -
+                       1]);  // adds the indexed vertex the list
+                             // of vertices for this face
       }
       // splits the face (which can be any polygon) into a bunch of triangles
       splittingVertex = 2;
       while ((size_t)splittingVertex < faceVertices.size()) {
-        v1 = faceVertices[0] + offset;
-        v2 = faceVertices[splittingVertex - 1] + offset;
-        v3 = faceVertices[splittingVertex] + offset;
+        v1 = faceVertices[0] * scale + offset;
+        v2 = faceVertices[splittingVertex - 1] * scale + offset;
+        v3 = faceVertices[splittingVertex] * scale + offset;
         addTriangle(v1, v2, v3, material);
         splittingVertex++;
       }
