@@ -20,7 +20,14 @@ class MetalCompute {
 
  public:
   MetalCompute();
-  void runKernel(const std::string& kernelName, std::vector<float>& data,
-                 std::function<void(std::vector<float>&)> callback = nullptr);
+
+  template <typename... Ts>
+  void runKernel(const std::string& kernelName, std::function<void()> callback,
+                 std::vector<Ts>&... vectors);
+  template <typename... Ts>
+  void runKernel(const std::string& kernelName, std::vector<Ts>&... vectors);
+
   ~MetalCompute();
 };
+
+#include "metal_impl.hpp"
