@@ -1,3 +1,5 @@
+#ifdef METAL
+
 #include "conversions.hpp"
 
 #include "math/camera.hpp"
@@ -176,3 +178,5 @@ Converter::GPU_Plane Converter::convertPlane(const Plane& plane) {
   gpuPlane.materialIndex = static_cast<uint32_t>(plane.materialIndex);
   return gpuPlane;
 }
+
+#endif

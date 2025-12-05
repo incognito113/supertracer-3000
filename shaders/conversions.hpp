@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef METAL
+
 #include <simd/simd.h>
 
 #include "math/ray.hpp"
@@ -108,3 +110,5 @@ class Converter {
 
   ~Converter() = default;
 };
+
+#endif
