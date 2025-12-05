@@ -1,22 +1,19 @@
+#ifdef METAL
+
 #pragma once
 
+#include <Metal/Metal.hpp>
 #include <functional>
 #include <string>
 #include <vector>
 
-// Forward declarations for Metal types to avoid including Metal headers here
-struct MetalDevice;
-struct MetalLibrary;
-struct MetalCommandQueue;
-struct MetalCommandBuffer;
-
 class MetalCompute {
  private:
-  MetalDevice* device;
-  MetalLibrary* lib;
-  MetalCommandQueue* queue;
+  MTL::Device* device;
+  MTL::Library* lib;
+  MTL::CommandQueue* queue;
 
-  void addHandler(MetalCommandBuffer* cb, std::function<void()> fn);
+  void addHandler(MTL::CommandBuffer* cb, std::function<void()> fn);
 
  public:
   MetalCompute();
@@ -31,3 +28,4 @@ class MetalCompute {
 };
 
 #include "metal_impl.hpp"
+#endif
