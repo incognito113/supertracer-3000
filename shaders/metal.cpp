@@ -1,21 +1,9 @@
 #define NS_PRIVATE_IMPLEMENTATION
 #define MTL_PRIVATE_IMPLEMENTATION
+
 #include "metal.hpp"
 
-#include <Metal/Metal.hpp>
-
-struct MetalDevice {
-  MTL::Device* raw;
-};
-struct MetalLibrary {
-  MTL::Library* raw;
-};
-struct MetalCommandQueue {
-  MTL::CommandQueue* raw;
-};
-struct MetalCommandBuffer {
-  MTL::CommandBuffer* raw;
-};
+#include "metal_impl.hpp"
 
 // Initialize Metal device, library, and command queue
 MetalCompute::MetalCompute() {
@@ -37,62 +25,6 @@ MetalCompute::MetalCompute() {
         std::string(error->localizedDescription()->utf8String()));
 
   queue->raw = device->raw->newCommandQueue();
-}
-
-// Run a compute kernel with given name on the data buffer
-// If callback is nullptr, the function runs synchronously
-void MetalCompute::runKernel(
-    const std::string& kernelName, std::vector<float>& data,
-    std::function<void(std::vector<float>&)> callback) {
-  NS::Error* error = nullptr;
-  auto func = lib->raw->newFunction(
-      NS::String::string(kernelName.c_str(), NS::UTF8StringEncoding));
-  auto pipeline = device->raw->newComputePipelineState(func, &error);
-  if (!pipeline)
-    throw std::runtime_error(
-        "Failed to create pipeline: " +
-        std::string(error->localizedDescription()->utf8String()));
-
-  auto buffer = device->raw->newBuffer(data.size() * sizeof(float),
-                                       MTL::ResourceStorageModeShared);
-  memcpy(buffer->contents(), data.data(), data.size() * sizeof(float));
-
-  MetalCommandBuffer* cmdBufferStruct = new MetalCommandBuffer();
-  cmdBufferStruct->raw = queue->raw->commandBuffer();
-  auto commandBuffer = cmdBufferStruct->raw;
-  auto encoder = commandBuffer->computeCommandEncoder();
-  encoder->setComputePipelineState(pipeline);
-  encoder->setBuffer(buffer, 0, 0);
-
-  // 256 is a common threadgroup size
-  MTL::Size threadsPerGroup(256, 1, 1);
-  MTL::Size numThreadgroups((data.size() + 255) / 256, 1, 1);
-  encoder->dispatchThreadgroups(numThreadgroups, threadsPerGroup);
-
-  encoder->endEncoding();
-
-  // If callback is provided, run asynchronously
-  if (callback) {
-    addHandler(cmdBufferStruct, [cmdBufferStruct, buffer, pipeline, func, callback, &data]() {
-      memcpy(data.data(), buffer->contents(), data.size() * sizeof(float));
-      callback(data);
-      buffer->release();
-      pipeline->release();
-      func->release();
-      delete cmdBufferStruct;
-    });
-    commandBuffer->commit();
-    return;
-  } else {
-    commandBuffer->commit();
-    commandBuffer->waitUntilCompleted();
-  }
-
-  memcpy(data.data(), buffer->contents(), data.size() * sizeof(float));
-  buffer->release();
-  pipeline->release();
-  func->release();
-  delete cmdBufferStruct;
 }
 
 // Clean up Metal resources
