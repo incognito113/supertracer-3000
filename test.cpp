@@ -137,7 +137,7 @@ void test_triangle_intersect() {
 }
 
 void test_metal() {
-#if __has_include(<Metal/Metal.hpp>)
+#ifdef METAL
   std::cout << "Testing Metal integration..." << std::endl;
 
   MetalCompute metalCompute;
@@ -157,7 +157,7 @@ void test_metal() {
 }
 
 void test_metal_async() {
-#if __has_include(<Metal/Metal.hpp>)
+#ifdef METAL
   std::cout << "Testing Metal async integration..." << std::endl;
 
   MetalCompute metalCompute;
