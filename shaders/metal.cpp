@@ -13,6 +13,9 @@ struct MetalLibrary {
 struct MetalCommandQueue {
   MTL::CommandQueue* raw;
 };
+struct MetalCommandBuffer {
+  MTL::CommandBuffer* raw;
+};
 
 // Initialize Metal device, library, and command queue
 MetalCompute::MetalCompute() {
@@ -37,8 +40,10 @@ MetalCompute::MetalCompute() {
 }
 
 // Run a compute kernel with given name on the data buffer
-void MetalCompute::runKernel(const std::string& kernelName,
-                             std::vector<float>& data) {
+// If callback is nullptr, the function runs synchronously
+void MetalCompute::runKernel(
+    const std::string& kernelName, std::vector<float>& data,
+    std::function<void(std::vector<float>&)> callback) {
   NS::Error* error = nullptr;
   auto func = lib->raw->newFunction(
       NS::String::string(kernelName.c_str(), NS::UTF8StringEncoding));
@@ -52,7 +57,9 @@ void MetalCompute::runKernel(const std::string& kernelName,
                                        MTL::ResourceStorageModeShared);
   memcpy(buffer->contents(), data.data(), data.size() * sizeof(float));
 
-  auto commandBuffer = queue->raw->commandBuffer();
+  MetalCommandBuffer* cmdBufferStruct = new MetalCommandBuffer();
+  cmdBufferStruct->raw = queue->raw->commandBuffer();
+  auto commandBuffer = cmdBufferStruct->raw;
   auto encoder = commandBuffer->computeCommandEncoder();
   encoder->setComputePipelineState(pipeline);
   encoder->setBuffer(buffer, 0, 0);
@@ -63,14 +70,29 @@ void MetalCompute::runKernel(const std::string& kernelName,
   encoder->dispatchThreadgroups(numThreadgroups, threadsPerGroup);
 
   encoder->endEncoding();
-  commandBuffer->commit();
-  commandBuffer->waitUntilCompleted();
+
+  // If callback is provided, run asynchronously
+  if (callback) {
+    addHandler(cmdBufferStruct, [cmdBufferStruct, buffer, pipeline, func, callback, &data]() {
+      memcpy(data.data(), buffer->contents(), data.size() * sizeof(float));
+      callback(data);
+      buffer->release();
+      pipeline->release();
+      func->release();
+      delete cmdBufferStruct;
+    });
+    commandBuffer->commit();
+    return;
+  } else {
+    commandBuffer->commit();
+    commandBuffer->waitUntilCompleted();
+  }
 
   memcpy(data.data(), buffer->contents(), data.size() * sizeof(float));
-
   buffer->release();
   pipeline->release();
   func->release();
+  delete cmdBufferStruct;
 }
 
 // Clean up Metal resources
