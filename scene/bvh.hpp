@@ -54,6 +54,7 @@ class BVH {
   }
 
   const std::vector<BVHNode>& getNodes() const { return nodes; }
+  const size_t getNodeCount() const { return nodes.size(); }
   const std::vector<int>& getShapeIndices() const { return shapeIndices; }
 
   void build(const std::vector<std::unique_ptr<BoundedShape>>& shapes);
