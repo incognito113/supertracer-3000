@@ -14,7 +14,7 @@ class Plane : public Shape {
   Plane(const Vector& p, const Vector& n, const size_t matIndex);
 
   std::optional<HitInfo> intersects(const Ray& ray) const override;
-  int getShapeType() const override { return 2; }
+  int getShapeType() const override { return Shape::PLANE; }
 
   Plane* clone() const override { return new Plane(*this); }
 };

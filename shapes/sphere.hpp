@@ -14,7 +14,7 @@ class Sphere : public BoundedShape {
   Sphere(const Vector& cen, double r, const size_t matIndex);
 
   std::optional<HitInfo> intersects(const Ray& ray) const override;
-  int getShapeType() const override { return 1; }
+  int getShapeType() const override { return Shape::SPHERE; }
 
   Sphere* clone() const override { return new Sphere(*this); }
 };

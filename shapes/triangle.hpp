@@ -22,7 +22,7 @@ class Triangle : public BoundedShape {
            const size_t matIndex);
 
   std::optional<HitInfo> intersects(const Ray& ray) const override;
-  int getShapeType() const override { return 0; }
+  int getShapeType() const override { return Shape::TRIANGLE; }
 
   Triangle* clone() const override { return new Triangle(*this); }
 };
