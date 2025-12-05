@@ -3,6 +3,8 @@
 #include <cmath>
 #include <iostream>
 #include <optional>
+#include <thread>
+#include <chrono>
 
 #include "math/camera.hpp"
 #include "math/color.hpp"
@@ -145,8 +147,9 @@ void test_metal() {
   MetalCompute metalCompute;
   const size_t dataSize = 16 * 1024 * 1024;
   std::vector<float> data(dataSize, 5.0f);
+  std::vector<float> data2(dataSize, 5.0f);
 
-  metalCompute.runKernel("speedTest", data);
+  metalCompute.runKernel("speedTest", data, nullptr);
 
   assert(data.size() == dataSize);
   for (size_t i = 0; i < dataSize; ++i) {
@@ -157,6 +160,33 @@ void test_metal() {
 #endif
 }
 
+void test_metal_async() {
+  #if __has_include(<Metal/Metal.hpp>)
+  std::cout << "Testing Metal async integration..." << std::endl;
+
+  MetalCompute metalCompute;
+  const size_t dataSize = 16 * 1024 * 1024;
+  std::vector<float> data(dataSize, 5.0f);
+  bool callbackCalled = false;
+
+  metalCompute.runKernel("speedTest", data, [&](std::vector<float>& result) {
+    assert(result.size() == dataSize);
+    for (size_t i = 0; i < dataSize; ++i) {
+      assert(result[i] == 65536.0f + 5.0f);
+    }
+    callbackCalled = true;
+  });
+
+  // Simple wait loop for demonstration purposes
+  // In real code, use proper synchronization
+  while (!callbackCalled) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+#else
+  std::cout << "Metal not available, skipping async test." << std::endl;
+#endif
+}
+
 int main() {
   test_color();
   test_vector();
@@ -164,6 +194,7 @@ int main() {
   test_plane_intersect();
   test_triangle_intersect();
   test_metal();
+  test_metal_async();
 
   std::cout << "All tests passed!" << std::endl;
 
