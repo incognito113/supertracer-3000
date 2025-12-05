@@ -15,6 +15,7 @@
 // Forward declaration
 class Tracer;
 class Renderer;
+class Converter;
 
 // Represents the entire 3D scene to be rendered
 class Scene {
@@ -82,7 +83,12 @@ class Scene {
   double getAmbientLight() const { return ambientLight; }
   const Color getBackground() const { return background; }
   const Camera getCamera() const { return camera; }
-  int shapeCount() const;
+
+  size_t lightCount() const { return lights.size(); }
+  size_t planeCount() const { return planes.size(); }
+  size_t boundedShapeCount() const { return bndedShapes.size(); }
+  size_t shapeCount() const { return planeCount() + boundedShapeCount(); }
+
   void setAmbientLight(const double ambient);
   void setCamera(const Vector pos, const Vector dir, const double fovDeg);
   void setCameraPos(const Vector pos);
@@ -106,6 +112,7 @@ class Scene {
 
   friend class Tracer;
   friend class Renderer;
+  friend class Converter;
 
   ~Scene() = default;
 };

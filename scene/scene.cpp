@@ -76,7 +76,3 @@ void Scene::addTriangle(const Vector& a, const Vector& b, const Vector& c,
   }
   addBoundedShape<Triangle>(mat, a, b, c, nA.norm(), nB.norm(), nC.norm());
 }
-
-int Scene::shapeCount() const {
-  return static_cast<int>(bndedShapes.size() + planes.size());
-}
