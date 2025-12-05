@@ -72,8 +72,8 @@ ifeq ($(USE_METAL),1)
 SRCS_CPP := $(shell find . -type f -name '*.cpp' ! -name 'metal_dummy.cpp' -print)
 SRCS_MM  := $(shell find . -type f -name '*.mm' -print)
 else
-# Exclude shaders/metal.cpp when Metal is disabled
-SRCS_CPP := $(shell find . -type f -name '*.cpp' ! -name 'metal.cpp' -print)
+# Exclude everything in shaders except shaders/metal_dummy.cpp
+SRCS_CPP := $(shell find . -type f -name '*.cpp' ! -path './shaders/*' -print) ./shaders/metal_dummy.cpp
 SRCS_MM  :=
 endif
 
