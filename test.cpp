@@ -1,10 +1,10 @@
 #include <array>
 #include <cassert>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <optional>
 #include <thread>
-#include <chrono>
 
 #include "math/camera.hpp"
 #include "math/color.hpp"
@@ -76,9 +76,8 @@ void test_vector() {
 void test_sphere_intersect() {
   std::cout << "Testing Sphere intersection..." << std::endl;
 
-  Material mat{};
-  Sphere sphere1(Vector(0.0, 0.0, 0.0), 1.0, mat);
-  Sphere sphere2(Vector(2.0, 2.0, 2.0), 0.5, mat);
+  Sphere sphere1(Vector(0.0, 0.0, 0.0), 1.0, 0);
+  Sphere sphere2(Vector(2.0, 2.0, 2.0), 0.5, 0);
   Ray ray(Vector(0.0, 0.0, -5.0), Vector(0.0, 0.0, 1.0));
 
   std::optional<HitInfo> hitInfoOpt1 = sphere1.intersects(ray);
@@ -95,9 +94,8 @@ void test_sphere_intersect() {
 void test_plane_intersect() {
   std::cout << "Testing Plane intersection..." << std::endl;
 
-  Material mat{};
-  Plane plane1(Vector(0.0, 5.0, 0.0), Vector(0.0, 1.0, 0.0), mat);
-  Plane plane2(Vector(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0), mat);
+  Plane plane1(Vector(0.0, 5.0, 0.0), Vector(0.0, 1.0, 0.0), 0);
+  Plane plane2(Vector(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0), 0);
   Ray ray(Vector(0.0, -1.0, 0.0), Vector(0.0, 1.0, 0.0));
 
   std::optional<HitInfo> hitInfoOpt1 = plane1.intersects(ray);
@@ -114,13 +112,11 @@ void test_plane_intersect() {
 void test_triangle_intersect() {
   std::cout << "Testing Triangle intersection..." << std::endl;
 
-  Material mat{};
-
   Vector v1(0.0, 0.0, 0.0);
   Vector v2(1.0, 0.0, 0.0);
   Vector v3(0.0, 1.0, 0.0);
 
-  Triangle tri(v1, v2, v3, mat);
+  Triangle tri(v1, v2, v3, 0);
 
   Ray ray1(Vector(0.25, 0.25, 1.0), Vector(0.0, 0.0, -1.0));
   auto hit1 = tri.intersects(ray1);
@@ -149,7 +145,7 @@ void test_metal() {
   std::vector<float> data(dataSize, 5.0f);
   std::vector<float> data2(dataSize, 5.0f);
 
-  metalCompute.runKernel("speedTest", data, nullptr);
+  metalCompute.runKernel("speedTest", data);
 
   assert(data.size() == dataSize);
   for (size_t i = 0; i < dataSize; ++i) {
@@ -161,7 +157,7 @@ void test_metal() {
 }
 
 void test_metal_async() {
-  #if __has_include(<Metal/Metal.hpp>)
+#if __has_include(<Metal/Metal.hpp>)
   std::cout << "Testing Metal async integration..." << std::endl;
 
   MetalCompute metalCompute;
@@ -169,13 +165,16 @@ void test_metal_async() {
   std::vector<float> data(dataSize, 5.0f);
   bool callbackCalled = false;
 
-  metalCompute.runKernel("speedTest", data, [&](std::vector<float>& result) {
-    assert(result.size() == dataSize);
-    for (size_t i = 0; i < dataSize; ++i) {
-      assert(result[i] == 65536.0f + 5.0f);
-    }
-    callbackCalled = true;
-  });
+  metalCompute.runKernel(
+      "speedTest",
+      [&]() {
+        assert(data.size() == dataSize);
+        for (size_t i = 0; i < dataSize; ++i) {
+          assert(data[i] == 65536.0f + 5.0f);
+        }
+        callbackCalled = true;
+      },
+      data);
 
   // Simple wait loop for demonstration purposes
   // In real code, use proper synchronization
