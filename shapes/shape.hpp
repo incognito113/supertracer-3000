@@ -28,9 +28,15 @@ struct HitInfo {
 
 // Forward declaration
 class Tracer;
+class Converter;
 
 // Abstract base class for all shapes in the scene
 class Shape {
+ protected:
+  static constexpr int TRIANGLE = 0;
+  static constexpr int SPHERE = 1;
+  static constexpr int PLANE = 2;
+
  public:
   const size_t materialIndex;
 
@@ -42,6 +48,8 @@ class Shape {
   virtual Shape* clone() const = 0;
 
   virtual ~Shape() = default;
+
+  friend class Converter;
 };
 
 struct Bounds {
