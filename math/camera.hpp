@@ -16,8 +16,11 @@ class Camera {
   double pitch = 0.0;
 
   Vector WORLD_UP = Vector(0, 0, 1);
-  Vector right() const;
-  Vector up() const;
+  Vector right;
+  Vector up;
+
+  void updateRight();
+  void updateUp();
 
  public:
   Vector position;

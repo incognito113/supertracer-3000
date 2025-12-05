@@ -35,15 +35,16 @@ Ray Camera::ray(const double i, const double j, const int width,
   return Ray(position, rayDir);
 }
 
-Vector Camera::right() const {
+void Camera::updateRight() {
   // If direction is too close to WORLD_UP or -WORLD_UP, use fallback
   if (fabs(direction.dot(WORLD_UP)) > 0.99) {
-    return Vector(1, 0, 0);  // arbitrary but stable
+    right = Vector(1, 0, 0);  // arbitrary but stable
+  } else {
+    right = direction.cross(WORLD_UP).norm();
   }
-  return direction.cross(WORLD_UP).norm();
 }
 
-Vector Camera::up() const { return right().cross(direction).norm(); }
+void Camera::updateUp() { up = right.cross(direction).norm(); }
 
 void Camera::setDir(const Vector& dir) {
   if (dir.magSq() < Vector::EPS * Vector::EPS) {
@@ -81,12 +82,11 @@ void Camera::eulerRotate(int dx, int dy) {
       Vector(cos(pitch) * cos(yaw), cos(pitch) * sin(yaw), sin(pitch));
 
   direction = forward.norm();
+  updateRight();
+  updateUp();
 }
 
 void Camera::movePosition(const Vector& delta) {
-  Vector right = this->right();
-  Vector up = this->up();
-
   position += right * delta.x() + up * delta.y() + direction * delta.z();
 }
 
