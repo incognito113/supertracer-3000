@@ -90,7 +90,8 @@ class Converter {
   };
 
  private:
-  GPU_SceneData convertSceneData(const Scene& scene, const BVH& bvh);
+  GPU_SceneData convertSceneData(const Scene& scene, const BVH& bvh,
+                                 int32_t numSpheres, int32_t numTriangles);
   GPU_Material convertMaterial(const Material& mat);
   GPU_Light convertLight(const Light& light);
   GPU_Ray convertRay(const Ray& ray);
@@ -98,7 +99,7 @@ class Converter {
   GPU_HitInfo convertHitInfo(const HitInfo& hitInfo, int materialIndex);
   GPU_Triangle convertTriangle(const Triangle& tri);
   GPU_Sphere convertSphere(const Sphere& sph);
-  GPU_Plane convertPlane(const Plane& plane, int materialIndex);
+  GPU_Plane convertPlane(const Plane& plane);
 
  public:
   Converter() = default;

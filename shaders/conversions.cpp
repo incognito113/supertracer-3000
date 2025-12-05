@@ -10,12 +10,20 @@
 #include "shapes/sphere.hpp"
 #include "shapes/triangle.hpp"
 
+simd_float3 fromVector(const Vector& vec) {
+  return simd_make_float3(static_cast<float>(vec.x()),
+                          static_cast<float>(vec.y()),
+                          static_cast<float>(vec.z()));
+}
+
+simd_float3 fromColor(const Color& color) {
+  return simd_make_float3(static_cast<float>(color.r()),
+                          static_cast<float>(color.g()),
+                          static_cast<float>(color.b()));
+}
+
 Converter::GPU_Data Converter::convertAll(const Scene& scene, const BVH& bvh) {
   Converter::GPU_Data gpuData;
-
-  // Convert scene data
-  GPU_SceneData sceneData = convertSceneData(scene, bvh);
-  gpuData.sceneData = sceneData;
 
   gpuData.materials.reserve(scene.materials.size());
   gpuData.lights.reserve(scene.lights.size());
@@ -38,6 +46,7 @@ Converter::GPU_Data Converter::convertAll(const Scene& scene, const BVH& bvh) {
   std::vector<int32_t> newIndexMapping(scene.shapeCount(), -1);
   int32_t sphereCount = 0;
   int32_t triangleCount = 0;
+  int32_t mapIndex = 0;
 
   for (const auto& shapePtr : scene.bndedShapes) {
     const Shape* shape = shapePtr.get();
@@ -45,11 +54,11 @@ Converter::GPU_Data Converter::convertAll(const Scene& scene, const BVH& bvh) {
     if (shape->getShapeType() == Shape::SPHERE) {
       const Sphere* sph = static_cast<const Sphere*>(shape);
       gpuData.spheres.push_back(convertSphere(*sph));
-      newIndexMapping.push_back(sphereCount++);
+      newIndexMapping[mapIndex++] = sphereCount++;
     } else if (shape->getShapeType() == Shape::TRIANGLE) {
       const Triangle* tri = static_cast<const Triangle*>(shape);
       gpuData.triangles.push_back(convertTriangle(*tri));
-      newIndexMapping.push_back(triangleCount++);
+      newIndexMapping[mapIndex++] = triangleCount++;
     }
   }
 
@@ -62,42 +71,41 @@ Converter::GPU_Data Converter::convertAll(const Scene& scene, const BVH& bvh) {
     gpuData.nodes.push_back(convertNode(node, newShapeIndex));
   }
 
+  // Convert scene data
+  GPU_SceneData sceneData =
+      convertSceneData(scene, bvh, sphereCount, triangleCount);
+  gpuData.sceneData = sceneData;
+
   // Convert planes
   for (size_t i = 0; i < scene.planes.size(); ++i) {
-    gpuData.planes.push_back(
-        convertPlane(*scene.planes[i], static_cast<int>(i)));
+    gpuData.planes.push_back(convertPlane(*scene.planes[i]));
   }
 
   return gpuData;
 }
 
 Converter::GPU_SceneData Converter::convertSceneData(const Scene& scene,
-                                                     const BVH& bvh) {
+                                                     const BVH& bvh,
+                                                     int32_t numSpheres,
+                                                     int32_t numTriangles) {
   Converter::GPU_SceneData gpuScene;
-  gpuScene.backgroundColor =
-      simd_make_float3(scene.getBackground().r(), scene.getBackground().g(),
-                       scene.getBackground().b());
-  gpuScene.position = simd_make_float3(scene.getCamera().position.x(),
-                                       scene.getCamera().position.y(),
-                                       scene.getCamera().position.z());
-  gpuScene.direction = simd_make_float3(scene.getCamera().direction.x(),
-                                        scene.getCamera().direction.y(),
-                                        scene.getCamera().direction.z());
+  gpuScene.backgroundColor = fromColor(scene.getBackground());
+  gpuScene.position = fromVector(scene.getCamera().position);
+  gpuScene.direction = fromVector(scene.getCamera().direction);
   gpuScene.fov = static_cast<float>(scene.getCamera().fov);
   gpuScene.numLights = static_cast<uint32_t>(scene.lightCount());
   gpuScene.numMaterials = static_cast<uint32_t>(scene.shapeCount());
   gpuScene.numPlanes = static_cast<uint32_t>(scene.planeCount());
-  gpuScene.numSpheres = static_cast<uint32_t>(scene.boundedShapeCount());
-  gpuScene.numTriangles = static_cast<uint32_t>(scene.boundedShapeCount());
+  gpuScene.numSpheres = numSpheres;
+  gpuScene.numTriangles = numTriangles;
   gpuScene.numNodes = static_cast<uint32_t>(bvh.getNodeCount());
   return gpuScene;
 }
 
 Converter::GPU_Material Converter::convertMaterial(const Material& mat) {
   Converter::GPU_Material gpuMat;
-  gpuMat.color = simd_make_float3(mat.color.r(), mat.color.g(), mat.color.b());
-  gpuMat.specular =
-      simd_make_float3(mat.specular.r(), mat.specular.g(), mat.specular.b());
+  gpuMat.color = fromColor(mat.color);
+  gpuMat.specular = fromColor(mat.specular);
   gpuMat.specularFactor = static_cast<float>(mat.specularFactor);
   gpuMat.shininess = static_cast<float>(mat.shininess);
   gpuMat.reflectivity = static_cast<float>(mat.reflectivity);
@@ -106,27 +114,23 @@ Converter::GPU_Material Converter::convertMaterial(const Material& mat) {
 
 Converter::GPU_Light Converter::convertLight(const Light& light) {
   Converter::GPU_Light gpuLight;
-  gpuLight.position = simd_make_float3(light.position.x(), light.position.y(),
-                                       light.position.z());
-  gpuLight.color =
-      simd_make_float3(light.color.r(), light.color.g(), light.color.b());
+  gpuLight.position = fromVector(light.position);
+  gpuLight.color = fromColor(light.color);
   return gpuLight;
 }
 
 Converter::GPU_Ray Converter::convertRay(const Ray& ray) {
   Converter::GPU_Ray gpuRay;
-  gpuRay.origin = simd_make_float3(ray.orig.x(), ray.orig.y(), ray.orig.z());
-  gpuRay.direction = simd_make_float3(ray.dir.x(), ray.dir.y(), ray.dir.z());
+  gpuRay.origin = fromVector(ray.orig);
+  gpuRay.direction = fromVector(ray.dir);
   return gpuRay;
 }
 
 Converter::GPU_Node Converter::convertNode(const BVHNode& node,
                                            int32_t shapeIndex) {
   Converter::GPU_Node gpuNode;
-  gpuNode.boundsMin = simd_make_float3(node.bounds.min.x(), node.bounds.min.y(),
-                                       node.bounds.min.z());
-  gpuNode.boundsMax = simd_make_float3(node.bounds.max.x(), node.bounds.max.y(),
-                                       node.bounds.max.z());
+  gpuNode.boundsMin = fromVector(node.bounds.min);
+  gpuNode.boundsMax = fromVector(node.bounds.max);
   gpuNode.left = static_cast<int32_t>(node.left);
   gpuNode.right = static_cast<int32_t>(node.right);
   gpuNode.shapeIndex = shapeIndex;
@@ -138,10 +142,8 @@ Converter::GPU_Node Converter::convertNode(const BVHNode& node,
 Converter::GPU_HitInfo Converter::convertHitInfo(const HitInfo& hitInfo,
                                                  int materialIndex) {
   Converter::GPU_HitInfo gpuHit;
-  gpuHit.position =
-      simd_make_float3(hitInfo.pos.x(), hitInfo.pos.y(), hitInfo.pos.z());
-  gpuHit.normal = simd_make_float3(hitInfo.normal.x(), hitInfo.normal.y(),
-                                   hitInfo.normal.z());
+  gpuHit.position = fromVector(hitInfo.pos);
+  gpuHit.normal = fromVector(hitInfo.normal);
   gpuHit.t = static_cast<float>(hitInfo.t);
   gpuHit.materialIndex = materialIndex;
   return gpuHit;
@@ -149,32 +151,28 @@ Converter::GPU_HitInfo Converter::convertHitInfo(const HitInfo& hitInfo,
 
 Converter::GPU_Triangle Converter::convertTriangle(const Triangle& tri) {
   Converter::GPU_Triangle gpuTri;
-  gpuTri.v0 = simd_make_float3(tri.v0.x(), tri.v0.y(), tri.v0.z());
-  gpuTri.v1 = simd_make_float3(tri.v1.x(), tri.v1.y(), tri.v1.z());
-  gpuTri.v2 = simd_make_float3(tri.v2.x(), tri.v2.y(), tri.v2.z());
-  gpuTri.n0 = simd_make_float3(tri.n0.x(), tri.n0.y(), tri.n0.z());
-  gpuTri.n1 = simd_make_float3(tri.n1.x(), tri.n1.y(), tri.n1.z());
-  gpuTri.n2 = simd_make_float3(tri.n2.x(), tri.n2.y(), tri.n2.z());
+  gpuTri.v0 = fromVector(tri.v0);
+  gpuTri.v1 = fromVector(tri.v1);
+  gpuTri.v2 = fromVector(tri.v2);
+  gpuTri.n0 = fromVector(tri.n0);
+  gpuTri.n1 = fromVector(tri.n1);
+  gpuTri.n2 = fromVector(tri.n2);
   gpuTri.materialIndex = static_cast<uint32_t>(tri.materialIndex);
   return gpuTri;
 }
 
 Converter::GPU_Sphere Converter::convertSphere(const Sphere& sph) {
   Converter::GPU_Sphere gpuSph;
-  gpuSph.center =
-      simd_make_float3(sph.center.x(), sph.center.y(), sph.center.z());
+  gpuSph.center = fromVector(sph.center);
   gpuSph.radius = static_cast<float>(sph.radius);
   gpuSph.materialIndex = static_cast<uint32_t>(sph.materialIndex);
   return gpuSph;
 }
 
-Converter::GPU_Plane Converter::convertPlane(const Plane& plane,
-                                             int materialIndex) {
+Converter::GPU_Plane Converter::convertPlane(const Plane& plane) {
   Converter::GPU_Plane gpuPlane;
-  gpuPlane.point =
-      simd_make_float3(plane.point.x(), plane.point.y(), plane.point.z());
-  gpuPlane.normal =
-      simd_make_float3(plane.normal.x(), plane.normal.y(), plane.normal.z());
-  gpuPlane.materialIndex = static_cast<uint32_t>(materialIndex);
+  gpuPlane.point = fromVector(plane.point);
+  gpuPlane.normal = fromVector(plane.normal);
+  gpuPlane.materialIndex = static_cast<uint32_t>(plane.materialIndex);
   return gpuPlane;
 }
