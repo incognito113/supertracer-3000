@@ -1,9 +1,13 @@
+#ifdef METAL
+
 #include "metal.hpp"
 #include <Metal/Metal.hpp>
 
-void MetalCompute::addHandler(MetalCommandBuffer *cb,
+void MetalCompute::addHandler(MTL::CommandBuffer *cb,
                               std::function<void()> fn) {
-  cb->raw->addCompletedHandler(^(MTL::CommandBuffer *) {
+  cb->addCompletedHandler(^(MTL::CommandBuffer *) {
     fn();
   });
 }
+
+#endif
