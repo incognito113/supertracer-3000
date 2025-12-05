@@ -8,6 +8,7 @@ MetalCompute::MetalCompute() {
   throw std::runtime_error("Metal is not available on this system!");
 }
 
-void MetalCompute::runKernel(const std::string&, std::vector<float>&) {}
+void MetalCompute::runKernel(const std::string&, std::vector<float>&,
+                             std::function<void(std::vector<float>&)>) {}
 
 MetalCompute::~MetalCompute() {}
