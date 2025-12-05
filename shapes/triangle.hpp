@@ -16,12 +16,13 @@ class Triangle : public BoundedShape {
   const Vector n2;
 
   Triangle(const Vector& a, const Vector& b, const Vector& c,
-           const Material& mat);
+           const size_t matIndex);
   Triangle(const Vector& a, const Vector& b, const Vector& c,
            const Vector& normalA, const Vector& normalB, const Vector& normalC,
-           const Material& mat);
+           const size_t matIndex);
 
   std::optional<HitInfo> intersects(const Ray& ray) const override;
+  int getShapeType() const override { return 0; }
 
   Triangle* clone() const override { return new Triangle(*this); }
 };

@@ -11,9 +11,10 @@ class Sphere : public BoundedShape {
   const Vector center;
   const double radius;
 
-  Sphere(const Vector& cen, double r, const Material& mat);
+  Sphere(const Vector& cen, double r, const size_t matIndex);
 
   std::optional<HitInfo> intersects(const Ray& ray) const override;
+  int getShapeType() const override { return 1; }
 
   Sphere* clone() const override { return new Sphere(*this); }
 };

@@ -13,17 +13,17 @@ struct HitInfo {
   const Vector normal;  // Surface normal at intersection
   const Ray ray;        // Ray that caused the hit
   const double t;
-  const Material* material;
+  const size_t materialIndex;
 
   HitInfo(const Vector& p, const Vector& n, const Ray& r, double tval,
-          const Material* m)
-      : pos(p), normal(n), ray(r), t(tval), material(m) {};
+          const size_t matIndex)
+      : pos(p), normal(n), ray(r), t(tval), materialIndex(matIndex) {}
   HitInfo(const HitInfo& other)
       : pos(other.pos),
         normal(other.normal),
         ray(other.ray),
         t(other.t),
-        material(other.material) {};
+        materialIndex(other.materialIndex) {};
 };
 
 // Forward declaration
@@ -31,19 +31,17 @@ class Tracer;
 
 // Abstract base class for all shapes in the scene
 class Shape {
- protected:
-  const Material material;
-
  public:
-  Shape(const Material& mat) : material(mat) {}
+  const size_t materialIndex;
+
+  Shape(const size_t matIndex) : materialIndex(matIndex) {}
 
   // Returns HitInfo if intersection, std::nullopt otherwise
   virtual std::optional<HitInfo> intersects(const Ray& ray) const = 0;
+  virtual int getShapeType() const = 0;  // 0 = triangle, 1 = sphere, 2 = plane
   virtual Shape* clone() const = 0;
 
   virtual ~Shape() = default;
-
-  friend class Tracer;
 };
 
 struct Bounds {
@@ -80,8 +78,8 @@ class BoundedShape : public Shape {
  public:
   Bounds bounds;
 
-  BoundedShape(const Material& mat, const Vector& bmin, const Vector& bmax)
-      : Shape(mat), bounds(bmin, bmax) {}
+  BoundedShape(const Vector& bmin, const Vector& bmax, const size_t matIndex)
+      : Shape(matIndex), bounds(bmin, bmax) {}
 
   virtual ~BoundedShape() = default;
 };

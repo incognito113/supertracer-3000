@@ -7,8 +7,8 @@
 #include "scene/light.hpp"
 
 // Bounding box is center +/- radius in all directions
-Sphere::Sphere(const Vector& cen, double r, const Material& mat)
-    : BoundedShape(mat, cen - Vector(r, r, r), cen + Vector(r, r, r)),
+Sphere::Sphere(const Vector& cen, double r, const size_t matIndex)
+    : BoundedShape(cen - Vector(r, r, r), cen + Vector(r, r, r), matIndex),
       center(cen),
       radius(r) {}
 
@@ -41,8 +41,7 @@ std::optional<HitInfo> Sphere::intersects(const Ray& ray) const {
   // Calculate intersection details
   const Vector pos = ray.at(t);
   const Vector normal = (pos - center).norm();
-  const Material* mat = &material;
 
-  const HitInfo hitInfo(pos, normal, ray, t, mat);
+  const HitInfo hitInfo(pos, normal, ray, t, materialIndex);
   return hitInfo;
 }

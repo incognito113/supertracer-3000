@@ -46,7 +46,7 @@ void Scene::addPlane(const Vector& point, const Vector& normal,
   if (normal.magSq() < Vector::EPS * Vector::EPS) {
     throw std::invalid_argument("Plane normal cannot be zero vector");
   }
-  planes.push_back(std::make_unique<Plane>(point, normal.norm(), mat));
+  addPlaneShape(mat, point, normal.norm());
 }
 
 // Add sphere (center, radius) to scene
@@ -55,20 +55,26 @@ void Scene::addSphere(const Vector& center, double radius,
   if (radius < Vector::EPS) {
     throw std::invalid_argument("Sphere radius must be positive");
   }
-  bndedShapes.push_back(std::make_unique<Sphere>(center, radius, mat));
+  addBoundedShape<Sphere>(mat, center, radius);
 }
 
 // Add triangle (v0, v1, v2) to scene
 void Scene::addTriangle(const Vector& a, const Vector& b, const Vector& c,
                         const Material& mat) {
-  bndedShapes.push_back(std::make_unique<Triangle>(a, b, c, mat));
+  addBoundedShape<Triangle>(mat, a, b, c);
 }
 
 // Add triangle with vertices and normals to scene
 void Scene::addTriangle(const Vector& a, const Vector& b, const Vector& c,
                         const Vector& nA, const Vector& nB, const Vector& nC,
                         const Material& mat) {
-  bndedShapes.push_back(std::make_unique<Triangle>(a, b, c, nA, nB, nC, mat));
+  if (nA.magSq() < Vector::EPS * Vector::EPS ||
+      nB.magSq() < Vector::EPS * Vector::EPS ||
+      nC.magSq() < Vector::EPS * Vector::EPS) {
+    throw std::invalid_argument(
+        "Triangle vertex normals cannot be zero vectors");
+  }
+  addBoundedShape<Triangle>(mat, a, b, c, nA.norm(), nB.norm(), nC.norm());
 }
 
 int Scene::shapeCount() const {

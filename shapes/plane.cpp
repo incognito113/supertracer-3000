@@ -6,8 +6,8 @@
 #include "shape.hpp"
 
 // Constr plane (no bounding box needed for infinite shape)
-Plane::Plane(const Vector& pt, const Vector& norm, const Material& mat)
-    : Shape(mat), point(pt), normal(norm.norm()) {}
+Plane::Plane(const Vector& pt, const Vector& norm, const size_t matIndex)
+    : Shape(matIndex), point(pt), normal(norm) {}
 
 // Calculate intersection of ray with plane
 std::optional<HitInfo> Plane::intersects(const Ray& ray) const {
@@ -25,5 +25,5 @@ std::optional<HitInfo> Plane::intersects(const Ray& ray) const {
   }
 
   Vector hitPoint = ray.at(t);
-  return HitInfo(hitPoint, normal, ray, t, &material);
+  return HitInfo(hitPoint, normal, ray, t, materialIndex);
 }

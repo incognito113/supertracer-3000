@@ -28,6 +28,22 @@ class Scene {
   std::vector<Light> lights;
   std::vector<std::unique_ptr<BoundedShape>> bndedShapes;
   std::vector<std::unique_ptr<Plane>> planes;
+  std::vector<Material> materials;
+
+  template <typename ShapeT, typename... Args>
+  void addBoundedShape(const Material& m, Args&&... args) {
+    materials.push_back(m);
+    size_t matIndex = materials.size() - 1;
+    bndedShapes.push_back(
+        std::make_unique<ShapeT>(std::forward<Args>(args)..., matIndex));
+  }
+
+  void addPlaneShape(const Material& m, const Vector& point,
+                     const Vector& normal) {
+    materials.push_back(m);
+    size_t matIndex = materials.size() - 1;
+    planes.push_back(std::make_unique<Plane>(point, normal, matIndex));
+  }
 
  public:
   Scene(const int w, const int h, const int maxRefl)
@@ -47,7 +63,8 @@ class Scene {
         background(other.background),
         lights(other.lights),
         bndedShapes(),
-        planes() {
+        planes(),
+        materials(other.materials) {
     // Deep copy of bounded shapes
     for (const std::unique_ptr<BoundedShape>& bshape : other.bndedShapes) {
       bndedShapes.push_back(std::unique_ptr<BoundedShape>(

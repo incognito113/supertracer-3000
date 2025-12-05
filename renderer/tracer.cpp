@@ -54,7 +54,7 @@ const Color Tracer::traceRay(const Scene& scene, const Ray& ray,
     finalColor += throughput * localColor;
 
     // Prepare for next reflection bounce
-    const Material* mat = hit.material;
+    const Material* mat = &scene.materials[hit.materialIndex];
 
     // If no more depth or no reflectivity, stop iterating
     if (mat->reflectivity <= 0) {
@@ -90,7 +90,7 @@ const Color Tracer::computeLighting(const Scene& scene,
   const Vector d = hitInfo.ray.dir;
 
   const Vector n = hitInfo.normal;
-  const Material* mat = hitInfo.material;
+  const Material* mat = &scene.materials[hitInfo.materialIndex];
 
   // Ambient light contribution (doesn't depend on lights)
   const double ambFactor = scene.getAmbientLight() * (1 - mat->reflectivity);

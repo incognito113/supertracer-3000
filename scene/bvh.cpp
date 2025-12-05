@@ -46,6 +46,7 @@ int BVH::buildRecursive(
     node.bounds = nodeBounds;
     node.shapeIndex = start;
     node.shapeCount = n;
+    node.shapeType = shapes[shapeIndices[start]]->getShapeType();
     return nodeIndex;
   }
 

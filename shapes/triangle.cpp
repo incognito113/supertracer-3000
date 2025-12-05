@@ -2,8 +2,8 @@
 
 // Construct triangle and compute normal
 Triangle::Triangle(const Vector& a, const Vector& b, const Vector& c,
-                   const Material& mat)
-    : BoundedShape(mat, a.min(b).min(c), a.max(b).max(c)),
+                   const size_t matIndex)
+    : BoundedShape(a.min(b).min(c), a.max(b).max(c), matIndex),
       v0(a),
       v1(b),
       v2(c),
@@ -14,8 +14,8 @@ Triangle::Triangle(const Vector& a, const Vector& b, const Vector& c,
 // Construct triangle with per-vertex normals
 Triangle::Triangle(const Vector& a, const Vector& b, const Vector& c,
                    const Vector& nA, const Vector& nB, const Vector& nC,
-                   const Material& mat)
-    : BoundedShape(mat, a.min(b).min(c), a.max(b).max(c)),
+                   const size_t matIndex)
+    : BoundedShape(a.min(b).min(c), a.max(b).max(c), matIndex),
       v0(a),
       v1(b),
       v2(c),
@@ -57,5 +57,5 @@ std::optional<HitInfo> Triangle::intersects(const Ray& ray) const {
   Vector normal = (n0 * (1 - u - v) + n1 * u + n2 * v).norm();
 
   // Calculate intersection details
-  return HitInfo{ray.at(t), normal, ray, t, &material};
+  return HitInfo{ray.at(t), normal, ray, t, materialIndex};
 }
