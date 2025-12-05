@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -7,6 +8,7 @@
 struct MetalDevice;
 struct MetalLibrary;
 struct MetalCommandQueue;
+struct MetalCommandBuffer;
 
 class MetalCompute {
  private:
@@ -14,8 +16,11 @@ class MetalCompute {
   MetalLibrary* lib;
   MetalCommandQueue* queue;
 
+  void addHandler(MetalCommandBuffer* cb, std::function<void()> fn);
+
  public:
   MetalCompute();
-  void runKernel(const std::string& kernelName, std::vector<float>& data);
+  void runKernel(const std::string& kernelName, std::vector<float>& data,
+                 std::function<void(std::vector<float>&)> callback = nullptr);
   ~MetalCompute();
 };
