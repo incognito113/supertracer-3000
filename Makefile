@@ -43,7 +43,7 @@ OPTIMIZED_FLAGS = -O3 -march=native -funroll-loops -fstrict-aliasing -flto -ffas
 
 # Add metal-cpp include when Metal enabled
 ifneq ($(USE_METAL),0)
-CFLAGS := $(if $(filter debug,$(MODE)),$(DEBUG_FLAGS),$(OPTIMIZED_FLAGS)) -I$(METAL_CPP_DIR)
+CFLAGS := $(if $(filter debug,$(MODE)),$(DEBUG_FLAGS),$(OPTIMIZED_FLAGS)) -I$(METAL_CPP_DIR) -DMETAL
 else
 CFLAGS := $(if $(filter debug,$(MODE)),$(DEBUG_FLAGS),$(OPTIMIZED_FLAGS))
 endif
@@ -66,16 +66,9 @@ AIR_FILES :=
 METAL_LIB :=
 endif
 
-# Source files: find all .cpp files
-ifeq ($(USE_METAL),1)
-# Exclude shaders/metal_dummy.cpp, add .mm helper when Metal is enabled
-SRCS_CPP := $(shell find . -type f -name '*.cpp' ! -name 'metal_dummy.cpp' -print)
+# Source files: find all .cpp and .mm files
+SRCS_CPP := $(shell find . -type f -name '*.cpp' -print)
 SRCS_MM  := $(shell find . -type f -name '*.mm' -print)
-else
-# Exclude everything in shaders except shaders/metal_dummy.cpp
-SRCS_CPP := $(shell find . -type f -name '*.cpp' ! -path './shaders/*' -print) ./shaders/metal_dummy.cpp
-SRCS_MM  :=
-endif
 
 # Convert sources to build/*.o with mirrored directory structure
 OBJS := $(patsubst ./%.cpp,$(BUILD_DIR)/%.o,$(SRCS_CPP)) \
