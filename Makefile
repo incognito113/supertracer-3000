@@ -68,15 +68,18 @@ endif
 
 # Source files: find all .cpp files
 ifeq ($(USE_METAL),1)
-# Exclude shaders/metal_dummy.cpp when Metal is enabled
-SRCS := $(shell find . -type f -name '*.cpp' ! -name 'metal_dummy.cpp' -print)
+# Exclude shaders/metal_dummy.cpp, add .mm helper when Metal is enabled
+SRCS_CPP := $(shell find . -type f -name '*.cpp' ! -name 'metal_dummy.cpp' -print)
+SRCS_MM  := $(shell find . -type f -name '*.mm' -print)
 else
 # Exclude shaders/metal.cpp when Metal is disabled
-SRCS := $(shell find . -type f -name '*.cpp' ! -name 'metal.cpp' -print)
+SRCS_CPP := $(shell find . -type f -name '*.cpp' ! -name 'metal.cpp' -print)
+SRCS_MM  :=
 endif
 
 # Convert sources to build/*.o with mirrored directory structure
-OBJS := $(patsubst ./%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
+OBJS := $(patsubst ./%.cpp,$(BUILD_DIR)/%.o,$(SRCS_CPP)) \
+				$(patsubst ./%.mm,$(BUILD_DIR)/%.o,$(SRCS_MM))
 
 # Object files for main and test targets
 MAIN_OBJ := $(BUILD_DIR)/main.o
@@ -114,6 +117,11 @@ endif
 
 # Generic compile rule for .cpp -> build/%.o
 $(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Generic compile rule for .mm -> build/%.o (Objective-C++)
+$(BUILD_DIR)/%.o: %.mm
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
