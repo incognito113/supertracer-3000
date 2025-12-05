@@ -91,8 +91,12 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
 
         // if there is a normal vector defined, add it to the list
         if (faceBlock.size() > 2) {
-          normalIndex = std::stoi(faceBlock[2]);
-          faceNormals.push_back(normalList[normalIndex - 1]);
+          if (!faceBlock[2].empty()) { // put this in its own thing cuz idk in which order multi-parameter
+                                       // ifs are calculated, and just want to potentially avoid it trying
+                                       // to index the faceBlock if it isn't sure it has three strings
+            normalIndex = std::stoi(faceBlock[2]);
+            faceNormals.push_back(normalList[normalIndex - 1]);
+          }
         } else {
           faceNormals.push_back(Vector());  // placeholder zero normal
         }
