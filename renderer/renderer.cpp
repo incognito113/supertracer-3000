@@ -94,14 +94,18 @@ void Renderer::run() {
         SDL_GetKeyboardState(NULL)[SDL_SCANCODE_RIGHT]) {
       cameraUpdate = true;
     }
-    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_LEFT]) {
+    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_LEFT] ||
+        SDL_GetKeyboardState(NULL)[SDL_SCANCODE_A]) {
       dir += Vector(-1.0, 0.0, 0.0);
-    } else if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_RIGHT]) {
+    } else if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_RIGHT] ||
+               SDL_GetKeyboardState(NULL)[SDL_SCANCODE_D]) {
       dir += Vector(1.0, 0.0, 0.0);
     }
-    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_UP]) {
+    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_UP] ||
+        SDL_GetKeyboardState(NULL)[SDL_SCANCODE_W]) {
       dir += Vector(0.0, 1.0, 0.0);
-    } else if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_DOWN]) {
+    } else if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_DOWN] ||
+               SDL_GetKeyboardState(NULL)[SDL_SCANCODE_S]) {
       dir += Vector(0.0, -1.0, 0.0);
     }
     if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_Q]) {
