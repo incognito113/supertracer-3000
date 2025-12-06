@@ -155,6 +155,42 @@ const Color Tracer::computeLighting(const Scene& scene,
   return finalColor;
 }
 
+#ifdef METAL
+
+void Tracer::refinePixels(Pixels& pixels) {
+  // Raytrace using Metal
+
+  metalBusy.store(true, std::memory_order_release);
+
+  auto sceneData = converter.convertSceneData(scene, bvh, 0, 0);
+  // All pixels have same sample count
+  sceneData.iteration = pixels.pxSamples[0] + 1;
+
+  metalCompute.raytrace(sceneData, [&](simd_float3* simdColors, size_t) {
+    for (size_t row = 0; row < scene.getHeight(); ++row) {
+      for (size_t col = 0; col < scene.getWidth(); ++col) {
+        // Convert color back to CPU format (clamped)
+        const uint index = row * scene.getWidth() + col;
+        Color color = converter.toColor(simdColors[index]).clamp();
+
+        pixels.pxColors[index] += color;
+        pixels.pxSamples[index]++;
+      }
+      // Mark row as ready
+      pixels.rowReady[row].store(true, std::memory_order_release);
+    }
+    metalBusy.store(false, std::memory_order_release);
+  });
+}
+
+// Wait for any outstanding Metal tasks to finish
+void Tracer::wait() {
+  while (metalBusy.load(std::memory_order_acquire)) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+}
+#else
+// CPU tracing version
 // Expects preallocated pixels vector
 // Updates pixels in place by adding new rays
 // If simple, performs uniform sampling with 1 ray per pixel
@@ -173,11 +209,11 @@ void Tracer::refinePixels(Pixels& pixels) {
         const int i = row * w + x;
         int oldSamples = pixels.pxSamples[i];
 
-        double xQuad = 0.5, yQuad = 0.5, xOffset = 0.0, yOffset = 0.0;
+        double xOffset = 0.5, yOffset = 0.5;
         if (oldSamples > 0) {
           const int a = ANTI_ALIAS_GRID_SIZE;
-          xQuad = ((oldSamples % a + 0.5) / a);
-          yQuad = (((oldSamples / a) % a + 0.5) / a);
+          const double xQuad = ((oldSamples % a + 0.5) / a);
+          const double yQuad = (((oldSamples / a) % a + 0.5) / a);
           xOffset = xQuad + dist(rng) / a;
           yOffset = yQuad + dist(rng) / a;
         }
@@ -195,3 +231,4 @@ void Tracer::refinePixels(Pixels& pixels) {
 }
 
 void Tracer::wait() { pool.wait(); }
+#endif
