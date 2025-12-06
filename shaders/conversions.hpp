@@ -46,8 +46,8 @@ class Converter {
   };
 
   struct GPU_Ray {
-    simd_float3 origin;
-    simd_float3 direction;
+    simd_float3 orig;
+    simd_float3 dir;
   };
 
   struct GPU_HitInfo {

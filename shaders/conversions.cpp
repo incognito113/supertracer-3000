@@ -139,8 +139,8 @@ Converter::GPU_Light Converter::convertLight(const Light& light) {
 
 Converter::GPU_Ray Converter::convertRay(const Ray& ray) {
   Converter::GPU_Ray gpuRay;
-  gpuRay.origin = fromVector(ray.orig);
-  gpuRay.direction = fromVector(ray.dir);
+  gpuRay.orig = fromVector(ray.orig);
+  gpuRay.dir = fromVector(ray.dir);
   return gpuRay;
 }
 

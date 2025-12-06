@@ -35,8 +35,8 @@ struct GPU_Light {
 };
 
 struct GPU_Ray {
-  float3 origin;
-  float3 direction;
+  float3 orig;
+  float3 dir;
 };
 
 struct GPU_HitInfo {
