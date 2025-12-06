@@ -5,10 +5,6 @@
 #include "ray.hpp"
 #include "vector.hpp"
 
-// Forward declaration
-class Tracer;
-class Scene;
-
 // Represents the camera in the scene
 class Camera {
  private:
@@ -46,7 +42,4 @@ class Camera {
           const int height) const;
 
   ~Camera() = default;
-
-  friend class Tracer;
-  friend class Scene;
 };
