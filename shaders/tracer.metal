@@ -2,6 +2,7 @@
 using namespace metal;
 
 #include "initial_ray.metal"
+#include "intersections.metal"
 #include "structs.metal"
 
 kernel void traceMultiBounce(const device GPU_SceneData* sceneData
@@ -29,5 +30,14 @@ kernel void traceMultiBounce(const device GPU_SceneData* sceneData
     // Placeholder
   }
 
-  outputColors[idx] = ray.direction;  // Dummy output
+  GPU_HitInfo hitInfo;
+  bool yes = intersectsSphere(
+      ray, &spheres[0],
+      &hitInfo);  // Dummy call to avoid unused function warning
+
+  if (yes) {
+    outputColors[idx] = float3(1.0, 0.0, 0.0);  // Red if hit
+  } else {
+    outputColors[idx] = sceneData->backgroundColor;  // Background color
+  }
 }
