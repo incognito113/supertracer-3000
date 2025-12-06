@@ -7,23 +7,36 @@
 #include "math/color.hpp"
 
 void Renderer::updateImage8() {
+#ifdef METAL
+  if (tracer.metalBusy.load(std::memory_order_acquire)) {
+    // Metal is still busy, skip this frame
+    return;
+  }
+#endif
+
   const int w = scene.getWidth();
   const int h = scene.getHeight();
 
   for (int y = 0; y < h; ++y) {
-    if (backPixels.rowReady[y].load(std::memory_order_acquire)) {
-      for (int x = 0; x < w; ++x) {
-        const int i = y * w + x;
-        const Color& col = backPixels.pxColors[i] /
-                           static_cast<double>(backPixels.pxSamples[i]);
-        const int rIndex = i * 3;
-        const auto bytes = col.clamp().getBytes();
-        image8[rIndex] = bytes[0];
-        image8[rIndex + 1] = bytes[1];
-        image8[rIndex + 2] = bytes[2];
-      }
-      backPixels.rowReady[y].store(false, std::memory_order_release);
+#ifndef METAL
+    // Only update rows that are ready (for non-metal rendering)
+    if (!backPixels.rowReady[y].load(std::memory_order_acquire)) {
+      continue;
     }
+#endif
+    for (int x = 0; x < w; ++x) {
+      const int i = y * w + x;
+      const Color& col =
+          backPixels.pxColors[i] / static_cast<double>(backPixels.pxSamples[i]);
+      const int rIndex = i * 3;
+      const auto bytes = col.clamp().getBytes();
+      image8[rIndex] = bytes[0];
+      image8[rIndex + 1] = bytes[1];
+      image8[rIndex + 2] = bytes[2];
+    }
+#ifndef METAL
+    backPixels.rowReady[y].store(false, std::memory_order_release);
+#endif
   }
 }
 
@@ -137,13 +150,14 @@ void Renderer::run() {
       std::fill(backPixels.pxColors.begin(), backPixels.pxColors.end(),
                 Color());
       std::fill(backPixels.pxSamples.begin(), backPixels.pxSamples.end(), 0);
+#ifndef METAL
       for (int y = 0; y < h; ++y) {
         backPixels.rowReady[y].store(false, std::memory_order_release);
       }
+#endif
     }
 
     // Make sure tracer isn't overloaded with tasks
-
 #ifdef METAL
     if (!tracer.metalBusy.load(std::memory_order_acquire)) {
       tracer.refinePixels(backPixels);
