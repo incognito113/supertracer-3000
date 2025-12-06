@@ -12,16 +12,28 @@
 #include "shapes/sphere.hpp"
 #include "shapes/triangle.hpp"
 
-simd_float3 fromVector(const Vector& vec) {
+simd_float3 Converter::fromVector(const Vector& vec) {
   return simd_make_float3(static_cast<float>(vec.x()),
                           static_cast<float>(vec.y()),
                           static_cast<float>(vec.z()));
 }
 
-simd_float3 fromColor(const Color& color) {
+simd_float3 Converter::fromColor(const Color& color) {
   return simd_make_float3(static_cast<float>(color.r()),
                           static_cast<float>(color.g()),
                           static_cast<float>(color.b()));
+}
+
+Color Converter::toColor(const simd_float3& simdColor) {
+  return Color(static_cast<double>(simdColor[0]),
+               static_cast<double>(simdColor[1]),
+               static_cast<double>(simdColor[2]));
+}
+
+Vector Converter::toVector(const simd_float3& simdVec) {
+  return Vector(static_cast<double>(simdVec[0]),
+                static_cast<double>(simdVec[1]),
+                static_cast<double>(simdVec[2]));
 }
 
 Converter::GPU_Data Converter::convertAll(const Scene& scene, const BVH& bvh) {
@@ -91,6 +103,10 @@ Converter::GPU_SceneData Converter::convertSceneData(const Scene& scene,
                                                      int32_t numSpheres,
                                                      int32_t numTriangles) {
   Converter::GPU_SceneData gpuScene;
+  gpuScene.width = scene.getWidth();
+  gpuScene.height = scene.getHeight();
+  gpuScene.maxReflections = scene.reflections();
+  gpuScene.iteration = 0;  // To be set during rendering
   gpuScene.backgroundColor = fromColor(scene.getBackground());
   gpuScene.position = fromVector(scene.getCamera().position);
   gpuScene.direction = fromVector(scene.getCamera().direction);

@@ -16,6 +16,10 @@
 class Converter {
  public:
   struct GPU_SceneData {
+    uint width;
+    uint height;
+    uint maxReflections;
+    uint iteration;
     simd_float3 backgroundColor;
     simd_float3 position;
     simd_float3 direction;
@@ -91,7 +95,15 @@ class Converter {
     std::vector<GPU_Plane> planes;
   };
 
- private:
+ public:
+  Converter() = default;
+
+  Vector toVector(const simd_float3& simdVec);
+  Color toColor(const simd_float3& simdColor);
+  simd_float3 fromVector(const Vector& vec);
+  simd_float3 fromColor(const Color& color);
+
+  GPU_Data convertAll(const Scene& scene, const BVH& bvh);
   GPU_SceneData convertSceneData(const Scene& scene, const BVH& bvh,
                                  int32_t numSpheres, int32_t numTriangles);
   GPU_Material convertMaterial(const Material& mat);
@@ -102,11 +114,6 @@ class Converter {
   GPU_Triangle convertTriangle(const Triangle& tri);
   GPU_Sphere convertSphere(const Sphere& sph);
   GPU_Plane convertPlane(const Plane& plane);
-
- public:
-  Converter() = default;
-
-  GPU_Data convertAll(const Scene& scene, const BVH& bvh);
 
   ~Converter() = default;
 };
