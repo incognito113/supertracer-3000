@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "scene/scene.hpp"
 #include "shapes/shape.hpp"
 
 struct BVHNode {
@@ -48,13 +49,10 @@ class BVH {
   };
 
  public:
-  BVH(const std::vector<std::unique_ptr<BoundedShape>>& shapes)
-      : nodes(), shapeIndices() {
-    build(shapes);
-  }
+  BVH(Scene& scene) : nodes(), shapeIndices() { build(scene.bndedShapes); }
 
   const std::vector<BVHNode>& getNodes() const { return nodes; }
-  const size_t getNodeCount() const { return nodes.size(); }
+  size_t getNodeCount() const { return nodes.size(); }
   const std::vector<int>& getShapeIndices() const { return shapeIndices; }
 
   void build(const std::vector<std::unique_ptr<BoundedShape>>& shapes);
