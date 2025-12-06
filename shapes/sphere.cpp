@@ -31,7 +31,7 @@ std::optional<HitInfo> Sphere::intersects(const Ray& ray) const {
 
   // Find the nearest positive intersection
   // We know that t1 <= t2, so check t1 first
-  double t = (t1 > Vector::EPS) ? t1 : ((t2 > 1e-6) ? t2 : -1);
+  double t = (t1 > Vector::EPS) ? t1 : ((t2 > Vector::EPS) ? t2 : -1);
 
   // Both intersections are negative, no intersection
   if (t < 0) {
