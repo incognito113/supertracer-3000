@@ -45,7 +45,7 @@ ThreadPool::~ThreadPool() {
 }
 
 // Get number of pending tasks
-int ThreadPool::numTasks() {
+size_t ThreadPool::numTasks() {
   std::unique_lock<std::mutex> lock(mtx);
   return tasks.size();
 }
