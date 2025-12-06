@@ -17,12 +17,12 @@ Image::Image(Scene& sc, int quality)
   tracer.wait();
 
   // Convert to 8-bit per channel
-  for (int y = 0; y < sc.getHeight(); ++y) {
-    for (int x = 0; x < sc.getWidth(); ++x) {
-      const int i = y * sc.getWidth() + x;
+  for (uint y = 0; y < sc.getHeight(); ++y) {
+    for (uint x = 0; x < sc.getWidth(); ++x) {
+      const uint i = y * sc.getWidth() + x;
       const Color col =
           tempPixels.pxColors[i] / static_cast<double>(tempPixels.pxSamples[i]);
-      const int rIndex = i * 3;
+      const uint rIndex = i * 3;
       const auto bytes = col.clamp().getBytes();
       const_cast<uint8_t&>(pixels[rIndex]) = bytes[0];
       const_cast<uint8_t&>(pixels[rIndex + 1]) = bytes[1];
