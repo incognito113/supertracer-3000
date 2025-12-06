@@ -1,11 +1,11 @@
 #pragma once
 
+#include <condition_variable>
 #include <functional>
+#include <mutex>
 #include <queue>
 #include <thread>
 #include <vector>
-#include <condition_variable>
-#include <mutex>
 
 // Simple thread pool for parallel task execution
 class ThreadPool {
@@ -32,8 +32,8 @@ class ThreadPool {
     cv.notify_one();
   }
 
-  int size() const { return workers.size(); }
-  int numTasks();
+  size_t size() const { return workers.size(); }
+  size_t numTasks();
 
   bool shouldAbort();
   void wait();
