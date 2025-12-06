@@ -143,9 +143,16 @@ void Renderer::run() {
     }
 
     // Make sure tracer isn't overloaded with tasks
+
+#ifdef METAL
+    if (!tracer.metalBusy.load(std::memory_order_acquire)) {
+      tracer.refinePixels(backPixels);
+    }
+#else
     if (tracer.pool.numTasks() <= scene.getHeight()) {
       tracer.refinePixels(backPixels);
     }
+#endif
 
     SDL_UpdateTexture(texture, nullptr, image8.data(), w * 3);
     SDL_RenderClear(sdlRenderer);
@@ -162,6 +169,12 @@ void Renderer::run() {
     // fps = (frameTime > 0) ? (1000 / frameTime) : 0;
     // std::cout << "FPS: " << fps << std::endl;
   }
+
+// Wait for any outstanding Metal tasks to finish
+// Very important to avoid heap-use-after-free crashes on exit
+#ifdef METAL
+  tracer.wait();
+#endif
 
   SDL_DestroyTexture(texture);
   SDL_DestroyRenderer(sdlRenderer);
