@@ -16,13 +16,14 @@
 class Tracer;
 class Renderer;
 class Converter;
+class BVH;
 
 // Represents the entire 3D scene to be rendered
 class Scene {
  private:
-  const int width;
-  const int height;
-  const int maxReflections;
+  const uint width;
+  const uint height;
+  const uint maxReflections;
   double ambientLight;
   Camera camera;
   Color background;
@@ -77,9 +78,9 @@ class Scene {
     }
   }
 
-  int getWidth() const { return width; }
-  int getHeight() const { return height; }
-  int reflections() const { return maxReflections; }
+  uint getWidth() const { return width; }
+  uint getHeight() const { return height; }
+  uint reflections() const { return maxReflections; }
   double getAmbientLight() const { return ambientLight; }
   const Color getBackground() const { return background; }
   const Camera getCamera() const { return camera; }
@@ -113,6 +114,7 @@ class Scene {
   friend class Tracer;
   friend class Renderer;
   friend class Converter;
+  friend class BVH;
 
   ~Scene() = default;
 };
