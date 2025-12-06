@@ -10,7 +10,12 @@
 #include "math/color.hpp"
 #include "math/ray.hpp"
 #include "math/vector.hpp"
+
+#ifdef METAL
+#include "shaders/conversions.hpp"
 #include "shaders/metal.hpp"
+#endif
+
 #include "shapes/plane.hpp"
 #include "shapes/sphere.hpp"
 #include "shapes/triangle.hpp"
@@ -140,49 +145,35 @@ void test_metal() {
 #ifdef METAL
   std::cout << "Testing Metal integration..." << std::endl;
 
-  MetalCompute metalCompute;
-  const size_t dataSize = 16 * 1024 * 1024;
-  std::vector<float> data(dataSize, 5.0f);
-  std::vector<float> data2(dataSize, 5.0f);
+  Scene scene(1400, 800, 5);
+  scene.setBackground(25, 25, 112);
 
-  metalCompute.runKernel("speedTest", data);
+  BVH bvh(scene);
 
-  assert(data.size() == dataSize);
-  for (size_t i = 0; i < dataSize; ++i) {
-    assert(data[i] == 65536.0f + 5.0f);
-  }
-#else
-  std::cout << "Metal not available, skipping test." << std::endl;
-#endif
-}
-
-void test_metal_async() {
-#ifdef METAL
-  std::cout << "Testing Metal async integration..." << std::endl;
-
-  MetalCompute metalCompute;
-  const size_t dataSize = 16 * 1024 * 1024;
-  std::vector<float> data(dataSize, 5.0f);
+  Converter converter;
+  auto result = converter.convertAll(scene, bvh);
   bool callbackCalled = false;
 
-  metalCompute.runKernel(
-      "speedTest",
-      [&]() {
-        assert(data.size() == dataSize);
-        for (size_t i = 0; i < dataSize; ++i) {
-          assert(data[i] == 65536.0f + 5.0f);
-        }
-        callbackCalled = true;
-      },
-      data);
+  MetalCompute metalCompute;
+  metalCompute.init(result);
 
-  // Simple wait loop for demonstration purposes
-  // In real code, use proper synchronization
+  auto time_start = std::chrono::high_resolution_clock::now();
+
+  metalCompute.raytrace(result.sceneData,
+                        [&](simd_float3*, size_t) { callbackCalled = true; });
+
   while (!callbackCalled) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::microseconds(1));
   }
+  auto time_end = std::chrono::high_resolution_clock::now();
+  auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
+                     time_end - time_start)
+                     .count();
+  std::cout << "Metal raytrace completed in " << elapsed << " microseconds."
+            << std::endl;
+
 #else
-  std::cout << "Metal not available, skipping async test." << std::endl;
+  std::cout << "Metal not available, skipping test." << std::endl;
 #endif
 }
 
@@ -193,7 +184,6 @@ int main() {
   test_plane_intersect();
   test_triangle_intersect();
   test_metal();
-  test_metal_async();
 
   std::cout << "All tests passed!" << std::endl;
 
