@@ -68,7 +68,13 @@ endif
 
 # Source files: find all .cpp and .mm files
 SRCS_CPP := $(shell find . -type f -name '*.cpp' -print)
+
+# Only include .mm files if Metal is enabled
+ifeq ($(USE_METAL),1)
 SRCS_MM  := $(shell find . -type f -name '*.mm' -print)
+else
+SRCS_MM  :=
+endif
 
 # Convert sources to build/*.o with mirrored directory structure
 OBJS := $(patsubst ./%.cpp,$(BUILD_DIR)/%.o,$(SRCS_CPP)) \
