@@ -1,7 +1,24 @@
-struct GPU_Camera {
+#ifndef STRUCTS_METAL
+#define STRUCTS_METAL
+
+#include <metal_stdlib>
+using namespace metal;
+
+struct GPU_SceneData {
+  uint width;
+  uint height;
+  uint maxReflections;
+  uint iteration;
+  float3 backgroundColor;
   float3 position;
   float3 direction;
   float fov;
+  uint numLights;
+  uint numMaterials;
+  uint numPlanes;
+  uint numSpheres;
+  uint numTriangles;
+  uint numNodes;
 };
 
 struct GPU_Material {
@@ -50,3 +67,11 @@ struct GPU_Sphere {
   float radius;
   int materialIndex;
 };
+
+struct GPU_Plane {
+  float3 point;
+  float3 normal;
+  int materialIndex;
+};
+
+#endif
