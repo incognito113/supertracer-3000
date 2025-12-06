@@ -23,7 +23,7 @@ class Camera {
   Vector direction;  // Must be normalized
   double fov;        // In degrees
   static constexpr double sensitivity =
-      0.0015;                                 // Mouse sensitivity for rotation
+      0.001;                                  // Mouse sensitivity for rotation
   static constexpr double scrollSens = 0.01;  // Scroll sensitivity for zoom
 
   Camera() : position(), direction(1, 0, 0), fov(60.0) {}
