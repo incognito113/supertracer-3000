@@ -21,7 +21,7 @@ Ray Camera::ray(const double i, const double j, const int width,
   double halfWidth = (w / h) * halfHeight;
 
   // Camera basis (Y up)
-  Vector right = direction.cross(Vector(0, 0, 1)).norm();
+  Vector right = direction.cross(Camera::WORLD_UP).norm();
   Vector up = right.cross(direction).norm();
 
   // Image plane coordinates
