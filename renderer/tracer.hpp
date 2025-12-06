@@ -3,7 +3,6 @@
 #include <atomic>
 #include <functional>
 #include <iostream>
-#include <mutex>
 
 #include "math/color.hpp"
 #include "math/ray.hpp"
@@ -28,6 +27,8 @@ struct Pixels {
   }
   Pixels(const Pixels& px) = default;
   Pixels& operator=(const Pixels& other) = default;
+
+  ~Pixels() = default;
 };
 
 // Forward declaration
@@ -41,12 +42,14 @@ class Tracer {
   const Color computeLighting(const Scene& scene, const HitInfo& hitInfo) const;
   const Scene& scene;
   BVH bvh;
+
 #ifdef METAL
   Converter converter;
   MetalCompute metalCompute;
   std::atomic_bool metalBusy = false;
   std::atomic_bool metalAbort = false;
 #endif
+
   ThreadPool pool{std::thread::hardware_concurrency()};
 
  public:

@@ -1,6 +1,7 @@
 #include "tracer.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <condition_variable>
 #include <fstream>
 #include <iostream>
@@ -159,7 +160,6 @@ const Color Tracer::computeLighting(const Scene& scene,
 
 void Tracer::refinePixels(Pixels& pixels) {
   // Raytrace using Metal
-
   metalBusy.store(true, std::memory_order_release);
 
   auto sceneData = converter.convertSceneData(scene, bvh, 0, 0);
@@ -176,8 +176,6 @@ void Tracer::refinePixels(Pixels& pixels) {
         pixels.pxColors[index] += color;
         pixels.pxSamples[index]++;
       }
-      // Mark row as ready
-      pixels.rowReady[row].store(true, std::memory_order_release);
     }
     metalBusy.store(false, std::memory_order_release);
   });
