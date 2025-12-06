@@ -3,12 +3,18 @@
 #include <atomic>
 #include <functional>
 #include <iostream>
+#include <mutex>
 
 #include "math/color.hpp"
 #include "math/ray.hpp"
 #include "pool.hpp"
 #include "scene/bvh.hpp"
 #include "scene/scene.hpp"
+
+#ifdef METAL
+#include "shaders/conversions.hpp"
+#include "shaders/metal.hpp"
+#endif
 
 struct Pixels {
   std::vector<int> pxSamples;   // Number of samples per pixel
@@ -35,10 +41,20 @@ class Tracer {
   const Color computeLighting(const Scene& scene, const HitInfo& hitInfo) const;
   const Scene& scene;
   BVH bvh;
+#ifdef METAL
+  Converter converter;
+  MetalCompute metalCompute;
+  std::atomic_bool metalBusy = false;
+  std::atomic_bool metalAbort = false;
+#endif
   ThreadPool pool{std::thread::hardware_concurrency()};
 
  public:
-  Tracer(Scene& sc) : scene(sc), bvh(sc.bndedShapes) {
+  Tracer(Scene& sc) : scene(sc), bvh(sc) {
+#ifdef METAL
+    auto gpuData = converter.convertAll(scene, bvh);
+    metalCompute.init(gpuData);
+#endif
     std::function<void(const std::vector<BVHNode>&, int, int)> printNode =
         [&](const std::vector<BVHNode>& nodes, int index, int depth) {
           if (index < 0) return;
