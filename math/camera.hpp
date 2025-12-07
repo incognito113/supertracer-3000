@@ -12,8 +12,6 @@ class Camera {
   double pitch = 0.0;
 
   Vector WORLD_UP = Vector(0, 0, 1);
-  Vector right;
-  Vector up;
 
   void updateRight();
   void updateUp();
@@ -22,17 +20,17 @@ class Camera {
   Vector position;
   Vector direction;  // Must be normalized
   double fov;        // In degrees
+
+  Vector right;
+  Vector up;
   static constexpr double sensitivity =
       0.001;                                  // Mouse sensitivity for rotation
   static constexpr double scrollSens = 0.01;  // Scroll sensitivity for zoom
 
-  Camera() : position(), direction(1, 0, 0), fov(60.0) {}
-  Camera(const Camera& other)
-      : yaw(other.yaw),
-        pitch(other.pitch),
-        position(other.position),
-        direction(other.direction),
-        fov(other.fov) {}
+  Camera()
+      : position(), direction(1, 0, 0), fov(60.0), right(1, 0, 0), up(0, 0, 1) {
+        };
+  Camera(const Camera& other) = default;
 
   void setDir(const Vector& dir);
   void eulerRotate(int dx, int dy);

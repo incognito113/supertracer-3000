@@ -37,7 +37,7 @@ Ray Camera::ray(const double i, const double j, const int width,
 
 void Camera::updateRight() {
   // If direction is too close to WORLD_UP or -WORLD_UP, use fallback
-  if (fabs(direction.dot(WORLD_UP)) > 0.99) {
+  if (std::fabs(direction.dot(WORLD_UP)) > 1.0 - Vector::EPS) {
     right = Vector(1, 0, 0);  // arbitrary but stable
   } else {
     right = direction.cross(WORLD_UP).norm();
@@ -68,6 +68,8 @@ void Camera::setDir(const Vector& dir) {
   direction = Vector(std::cos(pitch) * std::cos(yaw),
                      std::cos(pitch) * std::sin(yaw), std::sin(pitch))
                   .norm();
+  updateRight();
+  updateUp();
 }
 
 // Rotate camera direction by Euler angles (given mouse movement deltas)
