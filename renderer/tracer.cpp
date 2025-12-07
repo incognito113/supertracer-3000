@@ -159,12 +159,22 @@ const Color Tracer::computeLighting(const Scene& scene,
 #ifdef METAL
 
 void Tracer::refinePixels(Pixels& pixels) {
-  // Raytrace using Metal
-  metalBusy.store(true, std::memory_order_release);
+  if (metalRunning.load(std::memory_order_acquire)) {
+    return;
+  }
 
-  auto sceneData = converter.convertSceneData(scene, bvh, 0, 0);
+  // Raytrace using Metal
+  frameReady.store(false, std::memory_order_release);
+  metalRunning.store(true, std::memory_order_release);
+
   // All pixels have same sample count
-  sceneData.iteration = pixels.pxSamples[0] + 1;
+  sceneData.iteration = pixels.pxSamples[0];
+
+  // Update camera position/direction in case it changed
+  const Camera& cam = scene.getCamera();
+  sceneData.position = converter.fromVector(cam.position);
+  sceneData.direction = converter.fromVector(cam.direction);
+  sceneData.fov = static_cast<float>(cam.fov);
 
   metalCompute.raytrace(sceneData, [&](simd_float3* simdColors, size_t) {
     for (size_t row = 0; row < scene.getHeight(); ++row) {
@@ -177,13 +187,14 @@ void Tracer::refinePixels(Pixels& pixels) {
         pixels.pxSamples[index]++;
       }
     }
-    metalBusy.store(false, std::memory_order_release);
+    frameReady.store(true, std::memory_order_release);
+    metalRunning.store(false, std::memory_order_release);
   });
 }
 
 // Wait for any outstanding Metal tasks to finish
 void Tracer::wait() {
-  while (metalBusy.load(std::memory_order_acquire)) {
+  while (metalRunning.load(std::memory_order_acquire)) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 }
@@ -193,6 +204,9 @@ void Tracer::wait() {
 // Updates pixels in place by adding new rays
 // If simple, performs uniform sampling with 1 ray per pixel
 void Tracer::refinePixels(Pixels& pixels) {
+  if (pool.numTasks() > scene.getHeight()) {
+    return;
+  }
   const int w = scene.getWidth();
   const int h = scene.getHeight();
   const int refl = scene.reflections();

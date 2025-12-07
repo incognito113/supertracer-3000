@@ -46,8 +46,10 @@ class Tracer {
 #ifdef METAL
   Converter converter;
   MetalCompute metalCompute;
-  std::atomic_bool metalBusy = false;
+  Converter::GPU_SceneData sceneData;
   std::atomic_bool metalAbort = false;
+  std::atomic_bool metalRunning = false;
+  std::atomic_bool frameReady = true;
 #endif
 
   ThreadPool pool{std::thread::hardware_concurrency()};
@@ -57,6 +59,7 @@ class Tracer {
 #ifdef METAL
     auto gpuData = converter.convertAll(scene, bvh);
     metalCompute.init(gpuData);
+    sceneData = gpuData.sceneData;
 #endif
     std::function<void(const std::vector<BVHNode>&, int, int)> printNode =
         [&](const std::vector<BVHNode>& nodes, int index, int depth) {
