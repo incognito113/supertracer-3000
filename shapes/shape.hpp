@@ -36,6 +36,7 @@ class Shape {
   static constexpr int TRIANGLE = 0;
   static constexpr int SPHERE = 1;
   static constexpr int PLANE = 2;
+  static constexpr int CYLINDER = 3;
 
  public:
   const size_t materialIndex;

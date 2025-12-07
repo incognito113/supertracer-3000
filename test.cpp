@@ -19,6 +19,7 @@
 #include "shapes/plane.hpp"
 #include "shapes/sphere.hpp"
 #include "shapes/triangle.hpp"
+#include "shapes/cylinder.hpp"
 
 void test_color() {
   std::cout << "Testing Color class..." << std::endl;
@@ -141,6 +142,55 @@ void test_triangle_intersect() {
   assert(!hit3.has_value());
 }
 
+void test_cylinder_intersect() {
+  std::cout << "Testing Cylinder intersection..." << std::endl;
+
+  Cylinder cyl(Vector(0.0, 0.0, 0.0), 1.0, 2.0, 0);
+
+  {
+    Ray ray(Vector(2.0, 0.0, 0.0), Vector(-1.0, 0.0, 0.0));
+    auto hit = cyl.intersects(ray);
+
+    assert(hit.has_value());
+    assert(std::abs(hit->pos.x() - 1.0) < 1e-6);
+    assert(hit->normal == Vector(1.0, 0.0, 0.0));
+  }
+
+  {
+    Ray ray(Vector(0.0, 0.0, 3.0), Vector(0.0, 0.0, -1.0));
+    auto hit = cyl.intersects(ray);
+
+    assert(hit.has_value());
+    assert(std::abs(hit->pos.z() - 1.0) < 1e-6);
+    assert(hit->normal == Vector(0.0, 0.0, 1.0));
+  }
+
+  {
+    Ray ray(Vector(0.0, 0.0, -3.0), Vector(0.0, 0.0, 1.0));
+    auto hit = cyl.intersects(ray);
+
+    assert(hit.has_value());
+    assert(std::abs(hit->pos.z() + 1.0) < 1e-6);
+    assert(hit->normal == Vector(0.0, 0.0, -1.0));
+  }
+
+  {
+    Ray ray(Vector(3.0, 3.0, 0.0), Vector(-1.0, 0.0, 0.0));
+    auto hit = cyl.intersects(ray);
+
+    assert(!hit.has_value());
+  }
+
+  {
+    Ray ray(Vector(2.0, 0.0, 2.0), Vector(-1.0, 0.0, 0.0));
+    auto hit = cyl.intersects(ray);
+
+    assert(!hit.has_value());
+  }
+
+  std::cout << "Cylinder tests passed!" << std::endl;
+}
+
 void test_metal() {
 #ifdef METAL
   std::cout << "Testing Metal integration..." << std::endl;
@@ -182,6 +232,7 @@ int main() {
   test_sphere_intersect();
   test_plane_intersect();
   test_triangle_intersect();
+  test_cylinder_intersect();
   test_metal();
 
   std::cout << "All tests passed!" << std::endl;
