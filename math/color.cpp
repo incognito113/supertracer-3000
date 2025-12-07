@@ -44,17 +44,22 @@ Color Color::clamp() const {
                std::clamp(v.z(), 0.0, 1.0));
 }
 
-// Get color components as bytes in [0, 255]
-std::array<u_char, 3> Color::getBytes() const {
-  u_char red255 =
-      static_cast<u_char>(std::round(std::clamp(v.x(), 0.0, 1.0) * 255));
-  u_char green255 =
-      static_cast<u_char>(std::round(std::clamp(v.y(), 0.0, 1.0) * 255));
-  u_char blue255 =
-      static_cast<u_char>(std::round(std::clamp(v.z(), 0.0, 1.0) * 255));
-  return {red255, green255, blue255};
+static double gammaCorrect(double x) {
+    x = std::clamp(x, 0.0, 1.0);
+    return std::pow(x, 1.0 / 2.2);
 }
 
+std::array<u_char, 3> Color::getBytes() const {
+    double r = gammaCorrect(v.x());
+    double g = gammaCorrect(v.y());
+    double b = gammaCorrect(v.z());
+
+    return {
+        static_cast<u_char>(std::round(r * 255)),
+        static_cast<u_char>(std::round(g * 255)),
+        static_cast<u_char>(std::round(b * 255))
+    };
+}
 // Print color as Color(r, g, b)
 std::ostream& operator<<(std::ostream& os, const Color& color) {
   os << "Color(" << color.v.x() << ", " << color.v.y() << ", " << color.v.z()
