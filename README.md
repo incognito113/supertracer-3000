@@ -9,12 +9,13 @@ On MacOS:
 brew install sdl2
 ```
 
-- On Linux w/ DNF:
+On Linux w/ DNF:
 ```console
 dnf install SDL2-devel
 ```
 
-- On other Linux distros: good luck!
+On other Linux distros: good luck!
+
 
 To install metal-cpp on mac, run:
 
