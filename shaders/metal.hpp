@@ -20,6 +20,7 @@ class MetalCompute {
   MTL::Buffer* materialsBuf = nullptr;
   MTL::Buffer* lightsBuf = nullptr;
   MTL::Buffer* nodesBuf = nullptr;
+  MTL::Buffer* shapeRefBuf = nullptr;
   MTL::Buffer* trianglesBuf = nullptr;
   MTL::Buffer* spheresBuf = nullptr;
   MTL::Buffer* planesBuf = nullptr;

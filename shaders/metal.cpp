@@ -81,6 +81,9 @@ void MetalCompute::init(Converter::GPU_Data& gpuData) {
   nodesBuf =
       uploadToPrivateBuffer(device, queue, gpuData.nodes.data(),
                             gpuData.nodes.size() * sizeof(Converter::GPU_Node));
+  shapeRefBuf = uploadToPrivateBuffer(
+      device, queue, gpuData.shapeRefs.data(),
+      gpuData.shapeRefs.size() * sizeof(Converter::GPU_ShapeRef));
   trianglesBuf = uploadToPrivateBuffer(
       device, queue, gpuData.triangles.data(),
       gpuData.triangles.size() * sizeof(Converter::GPU_Triangle));
@@ -121,10 +124,11 @@ void MetalCompute::raytrace(
   encoder->setBuffer(materialsBuf, 0, 1);
   encoder->setBuffer(lightsBuf, 0, 2);
   encoder->setBuffer(nodesBuf, 0, 3);
-  encoder->setBuffer(trianglesBuf, 0, 4);
-  encoder->setBuffer(spheresBuf, 0, 5);
-  encoder->setBuffer(planesBuf, 0, 6);
-  encoder->setBuffer(outputColorsBuf, 0, 7);
+  encoder->setBuffer(shapeRefBuf, 0, 4);
+  encoder->setBuffer(trianglesBuf, 0, 5);
+  encoder->setBuffer(spheresBuf, 0, 6);
+  encoder->setBuffer(planesBuf, 0, 7);
+  encoder->setBuffer(outputColorsBuf, 0, 8);
 
   // Dispatch threads
   MTL::Size threadsPerGroup(8, 8, 1);
@@ -156,6 +160,7 @@ MetalCompute::~MetalCompute() {
   if (materialsBuf) materialsBuf->release();
   if (lightsBuf) lightsBuf->release();
   if (nodesBuf) nodesBuf->release();
+  if (shapeRefBuf) shapeRefBuf->release();
   if (trianglesBuf) trianglesBuf->release();
   if (spheresBuf) spheresBuf->release();
   if (planesBuf) planesBuf->release();
