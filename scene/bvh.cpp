@@ -46,7 +46,6 @@ int BVH::buildRecursive(
     node.bounds = nodeBounds;
     node.shapeIndex = start;
     node.shapeCount = n;
-    node.shapeType = shapes[shapeIndices[start]]->getShapeType();
     return nodeIndex;
   }
 
@@ -296,8 +295,8 @@ void BVH::traverseFirstHit(
       }
     } else {
       // Internal node: push children onto stack (left then right)
-      if (node.right >= 0) stack.emplace_back(StackItem{node.right, tmin});
       if (node.left >= 0) stack.emplace_back(StackItem{node.left, tmin});
+      if (node.right >= 0) stack.emplace_back(StackItem{node.right, tmin});
     }
   }
 }

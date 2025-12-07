@@ -13,8 +13,6 @@ struct BVHNode {
   int right;       // Index of right child in BVH array (-1 if leaf)
   int shapeIndex;  // Index into scene's shape array (-1 if not leaf)
   int shapeCount;  // Number of objects in this node (0 if not leaf)
-  // For GPU compatability, we store shape type here as well
-  int shapeType;  // 0 = triangle, 1 = sphere, 2 = plane (-1 if not leaf)
 
   BVHNode(const Bounds& b)
       : bounds(b), left(-1), right(-1), shapeIndex(-1), shapeCount(0) {}
