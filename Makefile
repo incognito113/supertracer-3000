@@ -21,7 +21,9 @@ ifeq ($(IS_MAC),Darwin)
 ifneq ($(METAL),)
 ifneq ($(METALLIB),)
 ifneq ($(wildcard $(METAL_CPP_DIR)),)
-USE_METAL := 1
+# Switch the comment between these two lines to enable/disable Metal
+# USE_METAL := 1
+USE_METAL := 0
 endif
 endif
 endif
