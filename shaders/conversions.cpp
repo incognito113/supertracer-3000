@@ -58,6 +58,7 @@ Converter::GPU_Data Converter::convertAll(const Scene& scene, const BVH& bvh) {
   // Old indices store spheres and triangles together; new indices separate them
   // Convert spheres and triangles, keeping track of new indices
   std::vector<int32_t> newIndexMapping(scene.shapeCount(), -1);
+  std::vector<int32_t> shapeTypeMapping(scene.shapeCount(), -1);
   int32_t sphereCount = 0;
   int32_t triangleCount = 0;
   int32_t mapIndex = 0;
@@ -68,21 +69,34 @@ Converter::GPU_Data Converter::convertAll(const Scene& scene, const BVH& bvh) {
     if (shape->getShapeType() == Shape::SPHERE) {
       const Sphere* sph = static_cast<const Sphere*>(shape);
       gpuData.spheres.push_back(convertSphere(*sph));
+      shapeTypeMapping[mapIndex] = Shape::SPHERE;
       newIndexMapping[mapIndex++] = sphereCount++;
     } else if (shape->getShapeType() == Shape::TRIANGLE) {
       const Triangle* tri = static_cast<const Triangle*>(shape);
       gpuData.triangles.push_back(convertTriangle(*tri));
+      shapeTypeMapping[mapIndex] = Shape::TRIANGLE;
       newIndexMapping[mapIndex++] = triangleCount++;
     }
   }
 
+  // Convert shapeRefs
+  gpuData.shapeRefs.reserve(scene.boundedShapeCount());
+  for (size_t i = 0; i < scene.boundedShapeCount(); ++i) {
+    Converter::GPU_ShapeRef shapeRef;
+    shapeRef.shapeIndex = newIndexMapping[i];
+    shapeRef.shapeType = shapeTypeMapping[i];
+    gpuData.shapeRefs.push_back(shapeRef);
+    std::cout << "ShapeRef " << i << ": index " << shapeRef.shapeIndex
+              << ", type " << shapeRef.shapeType << std::endl;
+  }
+
   // Convert BVH nodes, updating shape indices to new indices
   for (const BVHNode& node : bvh.getNodes()) {
-    int32_t newShapeIndex = -1;
-    if (node.shapeIndex != -1) {
-      newShapeIndex = newIndexMapping[node.shapeIndex];
-    }
-    gpuData.nodes.push_back(convertNode(node, newShapeIndex));
+    std::cout << "BVH Node: " << node.shapeIndex << ", " << node.shapeCount
+              << ", min: " << node.bounds.min << ", max: " << node.bounds.max
+              << ", left: " << node.left << ", right: " << node.right
+              << std::endl;
+    gpuData.nodes.push_back(convertNode(node));
   }
 
   // Convert scene data
@@ -106,6 +120,7 @@ Converter::GPU_SceneData Converter::convertSceneData(const Scene& scene,
   gpuScene.width = scene.getWidth();
   gpuScene.height = scene.getHeight();
   gpuScene.maxReflections = scene.reflections();
+  gpuScene.ambientLight = static_cast<float>(scene.ambientLight);
   gpuScene.iteration = 0;  // To be set during rendering
   gpuScene.backgroundColor = fromColor(scene.getBackground());
   gpuScene.position = fromVector(scene.getCamera().position);
@@ -144,16 +159,14 @@ Converter::GPU_Ray Converter::convertRay(const Ray& ray) {
   return gpuRay;
 }
 
-Converter::GPU_Node Converter::convertNode(const BVHNode& node,
-                                           int32_t shapeIndex) {
+Converter::GPU_Node Converter::convertNode(const BVHNode& node) {
   Converter::GPU_Node gpuNode;
   gpuNode.boundsMin = fromVector(node.bounds.min);
   gpuNode.boundsMax = fromVector(node.bounds.max);
   gpuNode.left = static_cast<int32_t>(node.left);
   gpuNode.right = static_cast<int32_t>(node.right);
-  gpuNode.shapeIndex = shapeIndex;
-  gpuNode.shapeCount = static_cast<int32_t>(node.shapeCount);
-  gpuNode.shapeType = static_cast<int32_t>(node.shapeType);
+  gpuNode.primIndex = static_cast<int32_t>(node.shapeIndex);
+  gpuNode.primCount = static_cast<int32_t>(node.shapeCount);
   return gpuNode;
 }
 

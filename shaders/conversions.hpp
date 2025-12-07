@@ -19,6 +19,7 @@ class Converter {
     uint width;
     uint height;
     uint maxReflections;
+    float ambientLight;
     uint iteration;
     simd_float3 backgroundColor;
     simd_float3 position;
@@ -60,11 +61,15 @@ class Converter {
   struct GPU_Node {
     simd_float3 boundsMin;
     simd_float3 boundsMax;
-    int32_t left;        // Index of left child in BVH array (-1 if leaf)
-    int32_t right;       // Index of right child in BVH array (-1 if leaf)
-    int32_t shapeIndex;  // Index into shape array of this type (-1 if not leaf)
-    int32_t shapeCount;  // Number of objects in this node (0 if not leaf)
-    int32_t shapeType;   // 0 = triangle, 1 = sphere, 2 = plane (-1 if not leaf)
+    int32_t left;       // Index of left child in BVH array (-1 if leaf)
+    int32_t right;      // Index of right child in BVH array (-1 if leaf)
+    int32_t primIndex;  // Index into shape ref array (-1 if not leaf)
+    int32_t primCount;  // Number of objects in this node (0 if not leaf)
+  };
+
+  struct GPU_ShapeRef {
+    int32_t shapeIndex;  // Index into triangle/sphere array
+    int32_t shapeType;
   };
 
   struct GPU_Triangle {
@@ -90,6 +95,7 @@ class Converter {
     std::vector<GPU_Material> materials;
     std::vector<GPU_Light> lights;
     std::vector<GPU_Node> nodes;
+    std::vector<GPU_ShapeRef> shapeRefs;
     std::vector<GPU_Triangle> triangles;
     std::vector<GPU_Sphere> spheres;
     std::vector<GPU_Plane> planes;
@@ -109,7 +115,7 @@ class Converter {
   GPU_Material convertMaterial(const Material& mat);
   GPU_Light convertLight(const Light& light);
   GPU_Ray convertRay(const Ray& ray);
-  GPU_Node convertNode(const BVHNode& node, int32_t shapeIndex);
+  GPU_Node convertNode(const BVHNode& node);
   GPU_HitInfo convertHitInfo(const HitInfo& hitInfo, int materialIndex);
   GPU_Triangle convertTriangle(const Triangle& tri);
   GPU_Sphere convertSphere(const Sphere& sph);
