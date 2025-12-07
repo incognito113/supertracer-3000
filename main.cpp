@@ -32,6 +32,11 @@ int main() {
                       .color = Color(0, 0, 255),
                       .reflectivity = 0.7,
                   });
+  scene.addSphere(Vector(-0.5, 0.75, 0.3), 0.3,
+                  Material{
+                      .color = Color(255, 255, 0),
+                      .reflectivity = 0.2,
+                  });
 
   std::cout << "Scene has " << scene.shapeCount() << " shapes." << std::endl;
 
