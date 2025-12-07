@@ -8,6 +8,7 @@ struct GPU_SceneData {
   uint width;
   uint height;
   uint maxReflections;
+  float ambientLight;
   uint iteration;
   float3 backgroundColor;
   float3 position;
@@ -51,27 +52,31 @@ struct GPU_Node {
   float3 boundsMax;
   int left;
   int right;
+  int primIndex;
+  int primCount;
+};
+
+struct GPU_ShapeRef {
   int shapeIndex;
-  int shapeCount;
   int shapeType;
 };
 
 struct GPU_Triangle {
   float3 v0, v1, v2;
   float3 n0, n1, n2;
-  int materialIndex;
+  uint materialIndex;
 };
 
 struct GPU_Sphere {
   float3 center;
   float radius;
-  int materialIndex;
+  uint materialIndex;
 };
 
 struct GPU_Plane {
   float3 point;
   float3 normal;
-  int materialIndex;
+  uint materialIndex;
 };
 
 #endif
