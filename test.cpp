@@ -146,7 +146,6 @@ void test_metal() {
   std::cout << "Testing Metal integration..." << std::endl;
 
   Scene scene(1400, 800, 5);
-  scene.setBackground(25, 25, 112);
 
   BVH bvh(scene);
 
