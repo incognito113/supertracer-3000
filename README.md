@@ -2,6 +2,11 @@
 
 Ray tracing project for CSCI 221
 
+Requires SDL2 library. 
+On MacOS: brew install sdl2
+On Linux w/ DNF: dnf install SDL2-devel
+On other Linux distros: good luck!
+
 To install metal-cpp on mac, run:
 
 ```console
