@@ -11,7 +11,7 @@ brew install sdl2
 
 On Linux w/ DNF:
 ```console
-dnf install SDL2-devel
+dnf install sdl2-compat-devel
 ```
 
 On other Linux distros: good luck!
