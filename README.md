@@ -1,7 +1,7 @@
 # supertracer-3000
 
 <p float="left">
-    <img src="reference_renders/spheres_render.png" width="350">
+    <img src="reference_renders/spheres_render.png" width="499">
     <img src="reference_renders/brutalism_render.png" width="350">
 </p>
 
