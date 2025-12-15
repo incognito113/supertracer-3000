@@ -12,15 +12,14 @@
 #include "scene/scene.hpp"
 
 // Trace a ray through the scene and return the resulting color
-const Color Tracer::traceRay(const Scene& scene, const Ray& ray,
-                             int depth) const {
+const Color Tracer::traceRay(const Scene& scene, const Ray& ray) const {
   // Iterative implementation: follow reflection bounces using a loop
   Color finalColor{0, 0, 0};
   double throughput = 1.0;
 
   Ray currentRay = ray;
 
-  for (int bounce = 0; bounce < depth; ++bounce) {
+  for (int bounce = 0; bounce < scene.getReflections(); ++bounce) {
     // Check for intersections with all shapes in the scene
     std::optional<HitInfo> closestHit;
     double closestT = std::numeric_limits<double>::max();
@@ -164,11 +163,10 @@ void Tracer::refinePixels(Pixels& pixels) {
 
   const int w = scene.getWidth();
   const int h = scene.getHeight();
-  const int refl = scene.reflections();
   const Camera& camera = scene.getCamera();
 
   for (int row = 0; row < h; ++row) {
-    pool.enqueue([this, &pixels, camera, row, w, h, refl]() {
+    pool.enqueue([this, &pixels, camera, row, w, h]() {
       thread_local std::mt19937 rng(std::random_device{}());
       thread_local std::uniform_real_distribution<double> dist(-0.5, 0.5);
 
@@ -186,7 +184,7 @@ void Tracer::refinePixels(Pixels& pixels) {
         }
 
         Ray ray = camera.ray(x + xOffset, row + yOffset, w, h);
-        Color c = traceRay(scene, ray, refl);
+        Color c = traceRay(scene, ray);
 
         pixels.pxColors[i] += c;
         pixels.pxSamples[i]++;

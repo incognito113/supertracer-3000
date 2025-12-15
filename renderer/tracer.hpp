@@ -33,7 +33,7 @@ class Renderer;
 class Tracer {
  private:
   static constexpr int ANTI_ALIAS_GRID_SIZE = 2;
-  const Color traceRay(const Scene& scene, const Ray& ray, int depth) const;
+  const Color traceRay(const Scene& scene, const Ray& ray) const;
   const Color computeLighting(const Scene& scene, const HitInfo& hitInfo) const;
   const Scene& scene;
   BVH bvh;
