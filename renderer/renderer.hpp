@@ -17,7 +17,7 @@ class Renderer {
   SDL_Window* window = nullptr;
   SDL_Renderer* sdlRenderer = nullptr;
   SDL_Texture* texture = nullptr;
-  static constexpr double MOVE_SPEED = 0.5;
+  static constexpr double MOVE_SPEED = 0.3;
 
   void updateImage8();
 
