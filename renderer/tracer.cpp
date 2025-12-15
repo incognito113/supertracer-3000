@@ -164,8 +164,6 @@ void Tracer::refinePixels(Pixels& pixels) {
   if (pool.numTasks() > scene.getHeight()) {
     return;
   }
-  std::cout << "Refining pixels: current samples per pixel = "
-            << pixels.pxSamples[0] << std::endl;
 
   const int w = scene.getWidth();
   const int h = scene.getHeight();
