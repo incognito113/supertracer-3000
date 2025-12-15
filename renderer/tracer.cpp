@@ -156,10 +156,7 @@ const Color Tracer::computeLighting(const Scene& scene,
   return finalColor;
 }
 
-// CPU tracing version
-// Expects preallocated pixels vector
-// Updates pixels in place by adding new rays
-// If simple, performs uniform sampling with 1 ray per pixel
+// Refines pixels object in place by adding one more sample per pixel
 void Tracer::refinePixels(Pixels& pixels) {
   if (pool.numTasks() > scene.getHeight()) {
     return;
