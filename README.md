@@ -6,43 +6,44 @@ Ray tracing engine that allows users to create custom scenes with a variety of p
 
 - [Installation](#installation)
 - [Requirements](#required-libraries)
-    - [Linux](#linux)
-    - [MacOS](#macos)
+  - [Linux](#linux)
+  - [MacOS](#macos)
 - [Design](#design)
-    - [Classes Overview](#classes-overview)
-    - [File Tree](#file-tree)
-    - [Bounding Volume Hierarchy](#bounding-volume-hierarchy)
+  - [Classes Overview](#classes-overview)
+  - [File Tree](#file-tree)
+  - [Bounding Volume Hierarchy](#bounding-volume-hierarchy)
 - [Usage](#usage)
-    - [Interactability](#interactability)
-    - [Basic Classes](#basic-classes)
-    - [Scene Defaults](#scene-defaults)
-    - [Adding Shapes](#adding-shapes)
-    - [Makefile Commands](#makefile-commands)
+  - [Interactability](#interactability)
+  - [Basic Classes](#basic-classes)
+  - [Scene Defaults](#scene-defaults)
+  - [Adding Shapes](#adding-shapes)
+  - [Makefile Commands](#makefile-commands)
 - [Contributors](#contributors)
-
 
 ## Installation
 
 You must have [Git](https://git-scm.com/) in order to install the program.
 
 Install supertracer-3000 with git:
+
 ```bash
 git clone https://github.com/incognito113/supertracer-3000
 ```
-
 
 ## Required Libraries
 
 ### Linux
 
-#### 1. Users with Linux systems or WSL should use gcc. 
+#### 1. Users with Linux systems or WSL should use gcc
 
 Check to see if you have it installed with:
+
 ```bash
 gcc --version
 ```
 
 If GCC is not installed, please install it with your respective package manager:
+
 ```bash
 dnf install g++
 ```
@@ -55,9 +56,10 @@ apt-get install g++
 pacman -S gcc
 ```
 
-#### 2. The SDL2 library is also required.
+#### 2. The SDL2 library is also required
 
 Once again, install with your preferred package manager:
+
 ```bash
 dnf install SDL2-devel
 ```
@@ -70,38 +72,29 @@ apt-get install libsdl2-2.0
 pacman -S sdl2
 ```
 
-
 ### MacOS
 
-#### 1. Supertracer-3000 is designed to work with clang on MacOS.
+#### 1. Supertracer-3000 is designed to work with clang on MacOS
 
 Make sure you have clang installed before proceeding:
+
 ```bash
 clang --version
 ```
 
 If it is not already installed, please install it:
+
 ```bash
 xcode-select --install
 ```
 
-#### 2. Also requires the SDL2 library.
+#### 2. Also requires the SDL2 library
 
 Install with homebrew:
+
 ```bash
 brew install sdl2
 ```
-
-#### 3. MacOS includes the experimental GPU-based rendering option, which requires metal-cpp.
-
-> [!WARNING]
-> This mode is experimental and may not work. If you want to try to get it working, you must install this. Otherwise, it is unnecessary. Proceed at your own risk.
-
-Install metal-cpp on Mac:
-```bash
-sudo mkdir -p /Library/Developer/metal-cpp && TMP=$(mktemp -d) && curl -L -o "$TMP/metal-cpp.zip" https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip && unzip -q "$TMP/metal-cpp.zip" -d "$TMP" && sudo cp -r "$TMP/metal-cpp/"* /Library/Developer/metal-cpp/ && rm -rf "$TMP"
-```
-
 
 ## Design
 
@@ -144,21 +137,25 @@ Users can create their own scenes by interacting with `main.cpp`, and calling me
 ### Scene Defaults
 
 First things first, we will need a camera. The camera must be initialized with three variables: its position in the scene, the direction it's pointing in, and its field of view (FOV).
+
 ```cpp
 void setCamera(const Vector pos, const Vector dir, const double fovDeg);
 ```
 
 Then we will want to set the background color. If there aren't any objects in a certain part of the camera's FOV, the renderer will set that part of the image to this color.
+
 ```cpp
 void setBackground(const int red, const int green, const int blue);
 ```
 
 Then we said, “Let there be light”; and there was light. In order for shapes to be anything other than black silhouttes, we'll need to put a light source somewhere in the scene. You can add as many of these as your heart desires.
+
 ```cpp
 void addLight(const Vector pos, const Color color);
 ```
 
 If we're not trying to emulate a film noire look, adding some ambient light can help make sure shadows aren't entirely pitch black.
+
 ```cpp
 void setAmbientLight(const double ambient);
 ```
@@ -166,26 +163,31 @@ void setAmbientLight(const double ambient);
 ### Adding shapes
 
 Now onto the fun part: shapes! Planes are defined by a point and a normal. The point can be any point that the plane will intersect with, and the normal vector points directly perpendicular (90 degrees) from the face of the plane.
+
 ```cpp
 void addPlane(const Vector& point, const Vector& normal, const Material& mat);
 ```
 
 Spheres are even easier: set the position of its midpoint with the `center` argument, and its radius with the `radius` argument.
+
 ```cpp
 void addSphere(const Vector& center, double radius, const Material& mat);
 ```
 
 Cylinders start to get more complex. Similarly to spheres, they are placed in Euclidean space by their midpoint `center`. The `radius` in this case is strictly for the horizontal dimension, while the vertical length of the cylinder is denoted with `height`.
+
 ```cpp
 void addCylinder(const Vector& center, double radius, double height, const Material& mat);
 ```
 
 Triangles are simply defined by their three vertices.
+
 ```cpp
 void addTriangle(const Vector& vertex1, const Vector& vertex2, const Vector& vertex3, const Material& mat);
 ```
 
 If you don't want to go through the tedious work of creating hundreds of triangles to make a mesh, we can do that for you! Place any .obj file of your choosing in the program's home directory, and then call `importOBJ` to load it into your scene. `offset` allows you to move your object around, and `scale` will multilpy each of the triangles by some constant. Set `scale = 0.5` to shrink it by half, or `scale = 2` to make it twice as large.
+
 ```cpp
 bool importOBJ(const Vector& offset, const std::string fileName, const double scale, const Material& mat);
 ```
@@ -193,28 +195,33 @@ bool importOBJ(const Vector& offset, const std::string fileName, const double sc
 ### Makefile Commands
 
 Compile and run the renderer for the scene defined in `main.cpp`:
+
 ```bash
 make main
 ```
 
-#### The following Make commands should be unnecessary so long as you have only modified code within `main.cpp`.
+#### The following Make commands should be unnecessary so long as you have only modified code within `main.cpp`
 
 Run tests of the underlying code:
+
 ```bash
 make test
 ```
 
 Compile both main and test executables:
+
 ```bash
 make
 ```
 
 Check for memory leaks in the main executable:
+
 ```bash
 make leaks-main
 ```
 
 Check for memory leaks in the test executable:
+
 ```bash
 make leaks-test
 ```
@@ -223,6 +230,6 @@ make leaks-test
 
 Asa Karon worked on the .ppm exporter, .obj importer, and this beautiful readme.
 
-Quincy Nash worked on ??????
+Quincy Nash worked on the lighting computations, BVH, and dynamic rendering system.
 
 Wystan Wu worked on some math foundations and the shape system. He is very grateful for the beautiful work and collaboration of the other group members.
