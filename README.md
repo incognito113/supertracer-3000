@@ -27,7 +27,7 @@ git clone https://github.com/incognito113/supertracer-3000
 
 ### Linux
 
-#### Users with Linux systems or WSL should use gcc. 
+#### 1. Users with Linux systems or WSL should use gcc. 
 
 Check to see if you have it installed with:
 ```console
@@ -47,7 +47,7 @@ apt-get install g++
 pacman -S gcc
 ```
 
-#### The SDL2 library is also required.
+#### 2. The SDL2 library is also required.
 
 Once again, install with your preferred package manager.
 ```console
@@ -65,7 +65,7 @@ pacman -S sdl2
 
 ### MacOS
 
-#### Supertracer-3000 is designed to work with clang on MacOS.
+#### 1. Supertracer-3000 is designed to work with clang on MacOS.
 
 Make sure you have clang installed before proceeding:
 ```console
@@ -73,19 +73,18 @@ clang --version
 ```
 
 If it is not already installed, please install it:
-(ASA: DOES THIS WORK? IDK I DON'T HAVE A MAC. I JUST GUESSED.....)
 ```console
-brew install clang
+xcode-select --install
 ```
 
-#### Also requires the SDL2 library.
+#### 2. Also requires the SDL2 library.
 
 Install with homebrew:
 ```console
 brew install sdl2
 ```
 
-#### MacOS includes the experimental GPU-based rendering option, which requires metal-cpp.
+#### 3. MacOS includes the experimental GPU-based rendering option, which requires metal-cpp.
 
 > [!WARNING]
 > This mode is experimental and may not work. If you want to try to get it working, install this. Otherwise, it is unnecessary. Proceed at your own risk.
@@ -125,7 +124,6 @@ Users can create their own scenes by interacting with `main.cpp`, and calling me
 
 
 ### Makefile Commands
-
 
 Compile and run the renderer for the scene defined in `main.cpp`:
 ```console
