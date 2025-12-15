@@ -158,4 +158,4 @@ Asa Karon worked on the .ppm exporter, .obj importer, and this beautiful readme.
 
 Quincy Nash worked on ??????
 
-Wystan Wu worked on ?????
+Wystan Wu worked on some math foundations and the shape system. He is very grateful for the beautiful work and collaboration of the other group members.
