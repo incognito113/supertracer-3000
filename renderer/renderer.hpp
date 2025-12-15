@@ -18,6 +18,7 @@ class Renderer {
   SDL_Renderer* sdlRenderer = nullptr;
   SDL_Texture* texture = nullptr;
   static constexpr double MOVE_SPEED = 0.3;
+  static constexpr uint MAX_QUALITY = 129;
 
   void updateImage8();
 

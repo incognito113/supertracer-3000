@@ -149,8 +149,10 @@ void Renderer::run() {
       }
     }
 
-    // Refine pixels by tracing more rays
-    tracer.refinePixels(backPixels);
+    // Refine pixels by tracing more rays if not at max quality
+    if (backPixels.pxSamples[0] < MAX_QUALITY) {
+      tracer.refinePixels(backPixels);
+    }
 
     const int frameTime = SDL_GetTicks() - frameStart;
     const int fps = (frameTime > 0) ? (1000 / frameTime) : 0;
