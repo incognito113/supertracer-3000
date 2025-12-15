@@ -10,16 +10,10 @@
 #include "math/color.hpp"
 #include "math/ray.hpp"
 #include "math/vector.hpp"
-
-#ifdef METAL
-#include "shaders/conversions.hpp"
-#include "shaders/metal.hpp"
-#endif
-
+#include "shapes/cylinder.hpp"
 #include "shapes/plane.hpp"
 #include "shapes/sphere.hpp"
 #include "shapes/triangle.hpp"
-#include "shapes/cylinder.hpp"
 
 void test_color() {
   std::cout << "Testing Color class..." << std::endl;
@@ -191,41 +185,6 @@ void test_cylinder_intersect() {
   std::cout << "Cylinder tests passed!" << std::endl;
 }
 
-void test_metal() {
-#ifdef METAL
-  std::cout << "Testing Metal integration..." << std::endl;
-
-  Scene scene(1400, 800, 5);
-
-  BVH bvh(scene);
-
-  Converter converter;
-  auto result = converter.convertAll(scene, bvh);
-  bool callbackCalled = false;
-
-  MetalCompute metalCompute;
-  metalCompute.init(result);
-
-  auto time_start = std::chrono::high_resolution_clock::now();
-
-  metalCompute.raytrace(result.sceneData,
-                        [&](simd_float3*, size_t) { callbackCalled = true; });
-
-  while (!callbackCalled) {
-    std::this_thread::sleep_for(std::chrono::microseconds(1));
-  }
-  auto time_end = std::chrono::high_resolution_clock::now();
-  auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
-                     time_end - time_start)
-                     .count();
-  std::cout << "Metal raytrace completed in " << elapsed << " microseconds."
-            << std::endl;
-
-#else
-  std::cout << "Metal not available, skipping test." << std::endl;
-#endif
-}
-
 int main() {
   test_color();
   test_vector();
@@ -233,7 +192,6 @@ int main() {
   test_plane_intersect();
   test_triangle_intersect();
   test_cylinder_intersect();
-  test_metal();
 
   std::cout << "All tests passed!" << std::endl;
 

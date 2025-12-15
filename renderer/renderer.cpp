@@ -7,23 +7,12 @@
 #include "math/color.hpp"
 
 void Renderer::updateImage8() {
-#ifdef METAL
-  // Only present when a full Metal frame has finished to avoid
-  // partial-row flashes when the GPU can't keep up.
-  if (!tracer.frameReady.load(std::memory_order_acquire)) {
-    return;
-  }
-#endif
-
   const int w = scene.getWidth();
   const int h = scene.getHeight();
 
   for (int y = 0; y < h; ++y) {
-    // For Metal we only copy when whole frame is ready; for CPU we copy rows
-    // as they become available.
-#ifndef METAL
+    // Copy rows as they become available.
     if (!backPixels.rowReady[y].load(std::memory_order_acquire)) continue;
-#endif
     for (int x = 0; x < w; ++x) {
       const int i = y * w + x;
       double samples = static_cast<double>(backPixels.pxSamples[i]);
@@ -36,9 +25,7 @@ void Renderer::updateImage8() {
       image8[rIndex + 1] = bytes[1];
       image8[rIndex + 2] = bytes[2];
     }
-#ifndef METAL
     backPixels.rowReady[y].store(false, std::memory_order_release);
-#endif
   }
 }
 
@@ -53,18 +40,6 @@ void Renderer::run() {
   texture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_RGB24,
                               SDL_TEXTUREACCESS_STREAMING, w, h);
 
-#ifdef METAL
-  // Kick off an initial Metal frame synchronously so the window shows
-  // scene objects immediately on startup instead of a blank/cleared view.
-  tracer.refinePixels(backPixels);
-  tracer.wait();
-  updateImage8();
-  SDL_UpdateTexture(texture, nullptr, image8.data(), w * 3);
-  SDL_RenderClear(sdlRenderer);
-  SDL_RenderCopy(sdlRenderer, texture, nullptr, nullptr);
-  SDL_RenderPresent(sdlRenderer);
-#endif
-
   bool running = true;
   bool rotating = false;
   SDL_Event event;
@@ -73,22 +48,10 @@ void Renderer::run() {
     // Copy back pixels to front if ready
     updateImage8();
 
-#ifdef METAL
-    // Only update/present when a full Metal frame is ready. This avoids
-    // clearing the renderer (black) between frames while the GPU is busy.
-    if (tracer.frameReady.load(std::memory_order_acquire)) {
-      SDL_UpdateTexture(texture, nullptr, image8.data(), w * 3);
-      SDL_RenderClear(sdlRenderer);
-      SDL_RenderCopy(sdlRenderer, texture, nullptr, nullptr);
-      SDL_RenderPresent(sdlRenderer);
-      tracer.frameReady.store(false, std::memory_order_release);
-    }
-#else
     SDL_UpdateTexture(texture, nullptr, image8.data(), w * 3);
     SDL_RenderClear(sdlRenderer);
     SDL_RenderCopy(sdlRenderer, texture, nullptr, nullptr);
     SDL_RenderPresent(sdlRenderer);
-#endif
 
     bool cameraUpdate = false;
     uint32_t frameStart = SDL_GetTicks();
@@ -184,10 +147,6 @@ void Renderer::run() {
       for (int y = 0; y < h; ++y) {
         backPixels.rowReady[y].store(false, std::memory_order_release);
       }
-#ifdef METAL
-      // Ensure frame-ready is cleared when camera moves
-      tracer.frameReady.store(false, std::memory_order_release);
-#endif
     }
 
     // Refine pixels by tracing more rays
@@ -203,12 +162,6 @@ void Renderer::run() {
     // fps = (frameTime > 0) ? (1000 / frameTime) : 0;
     // std::cout << "FPS: " << fps << std::endl;
   }
-
-// Wait for any outstanding Metal tasks to finish
-// Very important to avoid heap-use-after-free crashes on exit
-#ifdef METAL
-  tracer.wait();
-#endif
 
   SDL_DestroyTexture(texture);
   SDL_DestroyRenderer(sdlRenderer);
