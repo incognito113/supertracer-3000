@@ -8,6 +8,7 @@ Ray tracing engine that allows users to create custom scenes with a variety of p
 - [Requirements](#required-libraries)
     - [Linux](#linux)
     - [MacOS](#macos)
+- [Design](#design)
 - [Usage](#usage)
 - [Contributors](#contributors)
 
@@ -16,7 +17,7 @@ Ray tracing engine that allows users to create custom scenes with a variety of p
 
 You must have [Git](https://git-scm.com/) in order to install the program.
 
-Install with git:
+Install supertracer-3000 with git:
 ```console
 git clone https://github.com/incognito113/supertracer-3000
 ```
@@ -84,19 +85,44 @@ Install with homebrew:
 brew install sdl2
 ```
 
-<!---
+#### MacOS includes the experimental GPU-based rendering option, which requires metal-cpp.
 
-#### Optional Dependencies
+> [!WARNING]
+> This mode is experimental and may not work. If you want to try to get it working, install this. Otherwise, it is unnecessary. Proceed at your own risk.
 
-To install metal-cpp on mac, run:
-
+Install metal-cpp on Mac:
 ```console
 sudo mkdir -p /Library/Developer/metal-cpp && TMP=$(mktemp -d) && curl -L -o "$TMP/metal-cpp.zip" https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip && unzip -q "$TMP/metal-cpp.zip" -d "$TMP" && sudo cp -r "$TMP/metal-cpp/"* /Library/Developer/metal-cpp/ && rm -rf "$TMP"
 ```
 
---->
+
+## Design
+
+### Classes Overview
+
+At the highest level, the `Scene` class contains all of the information for the render. This includes the position of the camera, any point lights, and all of the shapes to render. Shapes all inherit from a default `Shape` class. They are bundled with their color and reflectivity, and each unique shape type defines its intersection math. During tracing, this will determine which shape (if any) the ray collides with. Most of the code is based on the `Vector` class, which handles a lot of the low-level calculations. This allows code to easily be implemented while leaving the vector math to the `Vector` class.
+
+### File Tree
+
+`io/` contains all of the file interfacing code. This includes the ability to import .obj files, and exporting rendered .ppm files.
+
+`math/` contains all of the low-level physics and math, including the definitions for our color, vector, and ray classes.
+
+`renderer/` pulls everything else together to compute the interactions between the camera, light source, and all of the shapes in the scene.
+
+`scene/` contains all of the other classes related to the scene, which holds everything that will be rendered, and properties of objects in the scene.
+
+`shaders/` contains experimental code for running the tracer on the GPU.
+
+`shapes/` includes code for calculating intersections of every type of object that can be rendered. Currently, these include planes, spheres, triangles, and cylinders.
+
 
 ## Usage
+
+### User Interaction
+
+Users can create their own scenes by interacting with `main.cpp`, and calling methods of the `Scene` class in order to add new shapes. Two demos are included for reference: a scene containing basic spheres and a plane, as well as the [Utah Teapot](https://en.wikipedia.org/wiki/Utah_teapot) imported from a .obj file.
+
 
 ### Makefile Commands
 
