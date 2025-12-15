@@ -80,7 +80,7 @@ class Scene {
 
   uint getWidth() const { return width; }
   uint getHeight() const { return height; }
-  uint reflections() const { return maxReflections; }
+  uint getReflections() const { return maxReflections; }
   double getAmbientLight() const { return ambientLight; }
   const Color getBackground() const { return background; }
   const Camera getCamera() const { return camera; }
