@@ -9,7 +9,15 @@ This is a ray tracing engine that allows users to create custom scenes with a va
     - [Linux](#linux)
     - [MacOS](#macos)
 - [Design](#design)
+    - [Classes Overview](#classes-overview)
+    - [File Tree](#file-tree)
+    - [Bounding Volume Hierarchy](#bounding-volume-hierarchy)
 - [Usage](#usage)
+    - [Interactability](#interactability)
+    - [Basic Classes](#basic-classes)
+    - [Scene Defaults](#scene-defaults)
+    - [Adding Shapes](#adding-shapes)
+    - [Makefile Commands](#makefile-commands)
 - [Contributors](#contributors)
 
 
@@ -133,7 +141,7 @@ Users can create their own scenes by interacting with `main.cpp`, and calling me
 
 - The `Material` class bundles all of the visual properties of objects in the scene. It can be initialized with `Material(Color color, double reflectivity)`. Color we've already covered, and is pretty self-explanatory. Reflectivity falls between 0-1, and sets how shiny the object should be: higher will be more reflective, while lower will be more matte.
 
-### Setting the Scene Defaults
+### Scene Defaults
 
 First things first, we will need a camera. The camera must be initialized with three variables: its position in the scene, the direction it's pointing in, and its field of view (FOV).
 ```cpp
