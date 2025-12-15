@@ -112,8 +112,6 @@ At the highest level, the `Scene` class contains all of the information for the 
 
 `scene/` contains all of the other classes related to the scene, which holds everything that will be rendered, and properties of objects in the scene.
 
-`shaders/` contains experimental code for running the tracer on the GPU.
-
 `shapes/` includes code for calculating intersections of every type of object that can be rendered. Currently, these include planes, spheres, triangles, and cylinders.
 
 ### Bounding Volume Hierarchy
