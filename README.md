@@ -1,13 +1,13 @@
 # supertracer-3000
 
-<p float="center">
-    <img src="reference_renders/brutalism_render.png" width="350">
-    <img src="reference_renders/spheres_render.png" width="499">
+Ray tracing engine that allows users to create custom scenes with a variety of predefined solids, imported meshes via .obj files, and real-time camera controls. The code base was developed as the final project for CSCI 221 in Fall 2025.
+
+<p float="left">
+    <img src="reference_renders/spheres_render.png" width="screen.width">
+    <img src="reference_renders/brutalism_render.png" width="screen.width">
 </p>
 
 Building model courtesy of [Nicolai Kilstrup](https://sketchfab.com/3d-models/building-brutalist-tricorner-a0923ae832474539bc856a8c6d3acc00)
-
-Ray tracing engine that allows users to create custom scenes with a variety of predefined solids, imported meshes via .obj files, and real-time camera controls. The code base was developed as the final project for CSCI 221 in Fall 2025.
 
 ## Table of Contents
 
