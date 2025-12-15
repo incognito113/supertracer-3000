@@ -126,14 +126,38 @@ Users can create their own scenes by interacting with `main.cpp`, and calling me
 
 ### Makefile Commands
 
-make: Compile both main and test executables
 
-make main: Run main executable
+Compile and run the renderer for the scene defined in `main.cpp`:
+```console
+make main
+```
 
-make test: Run all tests
+#### The following Make commands should be unnecessary so long as you have only modified code within `main.cpp`.
 
-make leaks-main: Check for leaks in main
+Run tests of the underlying code:
+```console
+make test
+```
 
-make leaks-test: Check for leaks in test
+Compile both main and test executables:
+```console
+make
+```
+
+Check for memory leaks in the main executable:
+```console
+make leaks-main
+```
+
+Check for memory leaks in the test executable:
+```console
+make leaks-test
+```
 
 ## Contributors
+
+Asa Karon worked on the .ppm exporter, .obj importer, and this beautiful readme.
+
+Quincy Nash worked on ??????
+
+Wystan Wu worked on ?????
