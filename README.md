@@ -95,7 +95,7 @@ brew install sdl2
 #### 3. MacOS includes the experimental GPU-based rendering option, which requires metal-cpp.
 
 > [!WARNING]
-> This mode is experimental and may not work. If you want to try to get it working, install this. Otherwise, it is unnecessary. Proceed at your own risk.
+> This mode is experimental and may not work. If you want to try to get it working, you must install this. Otherwise, it is unnecessary. Proceed at your own risk.
 
 Install metal-cpp on Mac:
 ```bash
