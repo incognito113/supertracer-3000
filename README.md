@@ -86,7 +86,7 @@ pacman -S sdl2
 Make sure you have clang installed before proceeding:
 
 ```bash
-clang --version
+clang++ --version
 ```
 
 If it is not already installed, please install it:
