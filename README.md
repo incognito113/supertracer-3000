@@ -52,7 +52,7 @@ gcc --version
 If GCC is not installed, please install it with your respective package manager:
 
 ```bash
-dnf install g++
+dnf install gcc
 ```
 
 ```bash
