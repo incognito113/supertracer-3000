@@ -42,7 +42,7 @@ Check to see if you have it installed with:
 gcc --version
 ```
 
-If GCC is not installed, please install it with your respective package manager.
+If GCC is not installed, please install it with your respective package manager:
 ```bash
 dnf install g++
 ```
@@ -57,7 +57,7 @@ pacman -S gcc
 
 #### 2. The SDL2 library is also required.
 
-Once again, install with your preferred package manager.
+Once again, install with your preferred package manager:
 ```bash
 dnf install SDL2-devel
 ```
