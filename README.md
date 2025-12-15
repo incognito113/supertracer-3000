@@ -1,6 +1,6 @@
 # supertracer-3000
 
-Ray tracing engine that allows users to create custom scenes with a variety of predefined solids, imported meshes via .obj files, and real-time camera controls. The code base was developed as the final project for CSCI 221 in Fall 2025.
+This is a ray tracing engine that allows users to create custom scenes with a variety of predefined solids, imported meshes via .obj files, and real-time camera controls. The code base was developed as the final project for CSCI 221 in Fall 2025.
 
 ## Table of Contents
 
@@ -117,30 +117,30 @@ At the highest level, the `Scene` class contains all of the information for the 
 
 ### Bounding Volume Hierarchy
 
-Our program uses a [bounding volume hierarchy](https://en.wikipedia.org/wiki/Bounding_volume_hierarchy) (BVH) to optimize ray intersections. Almost like a 3-dimensional binary search tree, the BVH intelligently splits all of the objects in the scene into two groups of shapes each with a different bounding box. We do this recursively so that with each bounding box calculation, we can split the possible number of objects remaining to check in half. The BVH makes calculating intersections blazingly fast, allowing for ultra-high-resolution and real-time rendering.
+Our program uses a [bounding volume hierarchy](https://en.wikipedia.org/wiki/Bounding_volume_hierarchy) (BVH) to optimize ray intersections. Almost like a 3-dimensional binary search tree, the BVH intelligently splits all of the objects in the scene in half into two groups of shapes, each with a unique bounding box. These bounding boxes make it easy to check whether or not a given ray will intersect with any of the objects inside of it. We do this recursively so that with each bounding box calculation, we can split the number of objects remaining to check in half. The BVH makes calculating intersections blazingly fast, allowing for ultra-high-resolution and real-time rendering.
 
 ## Usage
 
 ### Interactability
 
-Users can create their own scenes by interacting with `main.cpp`, and calling methods of the `Scene` class in order to add new shapes. Two demos are included for reference: a scene containing basic spheres and a plane, as well as the [Utah Teapot](https://en.wikipedia.org/wiki/Utah_teapot) imported from a .obj file. The camera can also be moved around real-time using either arrow keys or WASD, as well as E/Q to move in/out, and scrolling to zoom.
+Users can create their own scenes by interacting with `main.cpp`, and calling methods of the `Scene` class in order to add new shapes. Two demos are included for reference: a scene containing basic spheres and a plane, as well as the [Utah Teapot](https://en.wikipedia.org/wiki/Utah_teapot) imported from a .obj file. The camera can also be moved around real-time using either arrow keys or WASD, and E/Q to move in/out. Use the mouse or touchpad to pan/tilt, and scroll to zoom.
 
 ### Basic Classes
 
-- Vectors can be initialized with `Vector(double x, double y, double z)`. They are used both for positions, where (x, y, z) denote its respective coordinates in Euclidean space, and directions, where (x, y, z) represent a location which, relative to the origin (0, 0, 0), acts as the direction something is pointing.
+- Vectors can be initialized with `Vector(double x, double y, double z)`. They are used for positions, where (x, y, z) denote respective coordinates in Euclidean space. Vectors are also used for directions, where (x, y, z) represent a point relative to the origin (0, 0, 0); the difference between the origin and the point is the direction.
 
-- Colors can be initialized with `Color(int red, int green, int blue)` in typical 0-255 RGB. Alternately, they can be initialized with `Color(double red, double green, double blue)` where in which each RGB value must lie between 0-1.
+- Colors can be initialized with `Color(int red, int green, int blue)` in typical 0-255 RGB. Alternately, use `Color(double red, double green, double blue)` wherein each RGB value lies between 0-1.
 
 - The `Material` class bundles all of the visual properties of objects in the scene. It can be initialized with `Material(Color color, double reflectivity)`. Color we've already covered, and is pretty self-explanatory. Reflectivity falls between 0-1, and sets how shiny the object should be: higher will be more reflective, while lower will be more matte.
 
 ### Setting the Scene Defaults
 
-First things first, we will need a camera. The camera must be initialized with three variables: its position in the scene, the direction it's pointing in, as well as its field of view (FOV). Position and direction are both set with vectors.
+First things first, we will need a camera. The camera must be initialized with three variables: its position in the scene, the direction it's pointing in, and its field of view (FOV).
 ```console
 void setCamera(const Vector pos, const Vector dir, const double fovDeg);
 ```
 
-Then we will want to set the background to some color. If there aren't any objects in a certain part of the camera's FOV, the renderer will set those to be this color.
+Then we will want to set the background color. If there aren't any objects in a certain part of the camera's FOV, the renderer will set that part of the image to this color.
 ```console
 void setBackground(const int r, const int g, const int b);
 ```
@@ -150,14 +150,14 @@ Then we said, “Let there be light”; and there was light. In order for shapes
 void addLight(const Vector pos, const Color color);
 ```
 
-In order not to not have our scene be lit too harshly, adding some ambient light can make sure shadows aren't entirely pitch black.
+If we're not trying to emulate a film noire look, adding some ambient light can help make sure shadows aren't entirely pitch black.
 ```console
 void setAmbientLight(const double ambient);
 ```
 
 ### Adding shapes
 
-Now onto the fun part! Planes are defined by a point and a normal. The point can be any point that the plane will intersect with, and the normal vector points directly perpendicular (90 degrees) from the face of the plane.
+Now onto the fun part: shapes! Planes are defined by a point and a normal. The point can be any point that the plane will intersect with, and the normal vector points directly perpendicular (90 degrees) from the face of the plane.
 ```console
 void addPlane(const Vector& point, const Vector& normal, const Material& mat);
 ```
@@ -167,17 +167,17 @@ Spheres are even easier: set the position of its midpoint with the `center` argu
 void addSphere(const Vector& center, double radius, const Material& mat);
 ```
 
-Cylinders start to get more complex. Similarly to spheres, they are placed in Euclidean space by their midpoint `center`. The `radius` in this case is strictly for the horizontal dimension, while the vertical is denoted with `height`.
+Cylinders start to get more complex. Similarly to spheres, they are placed in Euclidean space by their midpoint `center`. The `radius` in this case is strictly for the horizontal dimension, while the vertical length of the cylinder is denoted with `height`.
 ```console
 void addCylinder(const Vector& center, double radius, double height, const Material& material);
 ```
 
-Triangles are simply defined by three points.
+Triangles are simply defined by their three vertices.
 ```console
 void addTriangle(const Vector& a, const Vector& b, const Vector& c, const Material& mat);
 ```
 
-If you don't want to go through the tedious work of creating hundreds of triangles to make a mesh, we can do that for you! Place any .obj file of your choosing in the directory, and then call this to load it into your scene. `offset` allows you to move your object around, and `scale` will multilpy each of the triangles by some constant. Set `scale = 0.5` to shrink it by half, or `scale = 2` to make it twice as large.
+If you don't want to go through the tedious work of creating hundreds of triangles to make a mesh, we can do that for you! Place any .obj file of your choosing in the program's home directory, and then call `importOBJ` to load it into your scene. `offset` allows you to move your object around, and `scale` will multilpy each of the triangles by some constant. Set `scale = 0.5` to shrink it by half, or `scale = 2` to make it twice as large.
 ```console
 bool importOBJ(const Vector& offset, const std::string fileName, const double scale, const Material& material);
 ```
