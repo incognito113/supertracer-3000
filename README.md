@@ -150,7 +150,7 @@ void setCamera(const Vector pos, const Vector dir, const double fovDeg);
 
 Then we will want to set the background color. If there aren't any objects in a certain part of the camera's FOV, the renderer will set that part of the image to this color.
 ```cpp
-void setBackground(const int r, const int g, const int b);
+void setBackground(const int red, const int green, const int blue);
 ```
 
 Then we said, “Let there be light”; and there was light. In order for shapes to be anything other than black silhouttes, we'll need to put a light source somewhere in the scene. You can add as many of these as your heart desires.
@@ -177,12 +177,12 @@ void addSphere(const Vector& center, double radius, const Material& mat);
 
 Cylinders start to get more complex. Similarly to spheres, they are placed in Euclidean space by their midpoint `center`. The `radius` in this case is strictly for the horizontal dimension, while the vertical length of the cylinder is denoted with `height`.
 ```cpp
-void addCylinder(const Vector& center, double radius, double height, const Material& material);
+void addCylinder(const Vector& center, double radius, double height, const Material& mat);
 ```
 
 Triangles are simply defined by their three vertices.
 ```cpp
-void addTriangle(const Vector& a, const Vector& b, const Vector& c, const Material& mat);
+void addTriangle(const Vector& vertex1, const Vector& vertex2, const Vector& vertex3, const Material& mat);
 ```
 
 If you don't want to go through the tedious work of creating hundreds of triangles to make a mesh, we can do that for you! Place any .obj file of your choosing in the program's home directory, and then call `importOBJ` to load it into your scene. `offset` allows you to move your object around, and `scale` will multilpy each of the triangles by some constant. Set `scale = 0.5` to shrink it by half, or `scale = 2` to make it twice as large.
