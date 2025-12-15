@@ -1,8 +1,9 @@
 # supertracer-3000
 
-<p float="left">
+<p float="center">
     <img src="reference_renders/spheres_render.png" width="499">
     <img src="reference_renders/brutalism_render.png" width="350">
+    Building model courtesy of [Nicolai Kilstrup](https://sketchfab.com/3d-models/building-brutalist-tricorner-a0923ae832474539bc856a8c6d3acc00)
 </p>
 
 
