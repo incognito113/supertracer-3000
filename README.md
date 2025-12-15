@@ -3,7 +3,6 @@
 Ray tracing engine that allows users to create custom scenes with a variety of predefined solids, imported meshes via .obj files, and real-time camera controls. The code base was developed as the final project for CSCI 221 in Fall 2025.
 
 <p float="left">
-    let spheres_width = 
     <img src="reference_renders/spheres_render.png" width="screen.width">
     <img src="reference_renders/brutalism_render.png" width="screen.width">
 </p>
