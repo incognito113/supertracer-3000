@@ -187,7 +187,7 @@ void addTriangle(const Vector& vertex1, const Vector& vertex2, const Vector& ver
 
 If you don't want to go through the tedious work of creating hundreds of triangles to make a mesh, we can do that for you! Place any .obj file of your choosing in the program's home directory, and then call `importOBJ` to load it into your scene. `offset` allows you to move your object around, and `scale` will multilpy each of the triangles by some constant. Set `scale = 0.5` to shrink it by half, or `scale = 2` to make it twice as large.
 ```cpp
-bool importOBJ(const Vector& offset, const std::string fileName, const double scale, const Material& material);
+bool importOBJ(const Vector& offset, const std::string fileName, const double scale, const Material& mat);
 ```
 
 ### Makefile Commands
