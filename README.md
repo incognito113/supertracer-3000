@@ -18,7 +18,7 @@ This is a ray tracing engine that allows users to create custom scenes with a va
 You must have [Git](https://git-scm.com/) in order to install the program.
 
 Install supertracer-3000 with git:
-```console
+```bash
 git clone https://github.com/incognito113/supertracer-3000
 ```
 
@@ -30,35 +30,35 @@ git clone https://github.com/incognito113/supertracer-3000
 #### 1. Users with Linux systems or WSL should use gcc. 
 
 Check to see if you have it installed with:
-```console
+```bash
 gcc --version
 ```
 
 If GCC is not installed, please install it with your respective package manager.
-```console
+```bash
 dnf install g++
 ```
 
-```console
+```bash
 apt-get install g++
 ```
 
-```console
+```bash
 pacman -S gcc
 ```
 
 #### 2. The SDL2 library is also required.
 
 Once again, install with your preferred package manager.
-```console
+```bash
 dnf install SDL2-devel
 ```
 
-```console
+```bash
 apt-get install libsdl2-2.0
 ```
 
-```console
+```bash
 pacman -S sdl2
 ```
 
@@ -68,19 +68,19 @@ pacman -S sdl2
 #### 1. Supertracer-3000 is designed to work with clang on MacOS.
 
 Make sure you have clang installed before proceeding:
-```console
+```bash
 clang --version
 ```
 
 If it is not already installed, please install it:
-```console
+```bash
 xcode-select --install
 ```
 
 #### 2. Also requires the SDL2 library.
 
 Install with homebrew:
-```console
+```bash
 brew install sdl2
 ```
 
@@ -90,7 +90,7 @@ brew install sdl2
 > This mode is experimental and may not work. If you want to try to get it working, install this. Otherwise, it is unnecessary. Proceed at your own risk.
 
 Install metal-cpp on Mac:
-```console
+```bash
 sudo mkdir -p /Library/Developer/metal-cpp && TMP=$(mktemp -d) && curl -L -o "$TMP/metal-cpp.zip" https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip && unzip -q "$TMP/metal-cpp.zip" -d "$TMP" && sudo cp -r "$TMP/metal-cpp/"* /Library/Developer/metal-cpp/ && rm -rf "$TMP"
 ```
 
@@ -185,29 +185,29 @@ bool importOBJ(const Vector& offset, const std::string fileName, const double sc
 ### Makefile Commands
 
 Compile and run the renderer for the scene defined in `main.cpp`:
-```console
+```bash
 make main
 ```
 
 #### The following Make commands should be unnecessary so long as you have only modified code within `main.cpp`.
 
 Run tests of the underlying code:
-```console
+```bash
 make test
 ```
 
 Compile both main and test executables:
-```console
+```bash
 make
 ```
 
 Check for memory leaks in the main executable:
-```console
+```bash
 make leaks-main
 ```
 
 Check for memory leaks in the test executable:
-```console
+```bash
 make leaks-test
 ```
 
