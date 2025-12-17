@@ -2,10 +2,9 @@
 
 Ray tracing engine that allows users to create custom scenes with a variety of predefined solids, imported meshes via .obj files, and real-time camera controls. The code base was developed as the final project for CSCI 221 in Fall 2025.
 
-<p float="left">
-    <img src="reference_renders/spheres_render.png" width="screen.width">
-    <img src="reference_renders/brutalism_render.png" width="screen.width">
-</p>
+![Spheres render](reference_renders/spheres_render.png)
+
+![Brutalism render](reference_renders/brutalism_render.png)
 
 Building model courtesy of [Nicolai Kilstrup](https://sketchfab.com/3d-models/building-brutalist-tricorner-a0923ae832474539bc856a8c6d3acc00)
 
@@ -14,7 +13,7 @@ Building model courtesy of [Nicolai Kilstrup](https://sketchfab.com/3d-models/bu
 - [Installation](#installation)
 - [Requirements](#required-libraries)
   - [Linux](#linux)
-  - [MacOS](#macos)
+  - [macOS](#macos)
 - [Design](#design)
   - [Classes Overview](#classes-overview)
   - [File Tree](#file-tree)
@@ -79,9 +78,9 @@ apt-get install libsdl2-2.0
 pacman -S sdl2
 ```
 
-### MacOS
+### macOS
 
-#### 1. Supertracer-3000 is designed to work with clang on MacOS
+#### 1. Supertracer-3000 is designed to work with clang on macOS
 
 Make sure you have clang installed before proceeding:
 
@@ -137,7 +136,7 @@ Users can create their own scenes by interacting with `main.cpp`, and calling me
 
 - Colors can be initialized with `Color(int red, int green, int blue)` in typical 0-255 RGB. Alternately, use `Color(double red, double green, double blue)` wherein each RGB value lies between 0-1.
 
-- The `Material` class bundles all of the visual properties of objects in the scene. It can be initialized with `Material(Color color, double reflectivity)`. Color we've already covered, and is pretty self-explanatory. Reflectivity falls between 0-1, and sets how shiny the object should be: higher will be more reflective, while lower will be more matte.
+- The `Material` class bundles all of the visual properties of objects in the scene. It can be initialized with `Material(Color color, double reflectivity)`. There are also additional parameters that can be optionally specified: `Color specular = Color(255, 255, 255), double specularFactor = 0.5, double shininess = 8.0`. Color we've already covered, and is pretty self-explanatory. Reflectivity falls between 0-1, and sets how shiny the object should be: higher will be more reflective, while lower will be more matte. Specular controls the color of specular reflections, which are usually white. Specular factor falls between 0-1 and controls the intensity of specular reflections. Shininess controls how concentrated specular highlights are: lower exponents make highlights broader and softer.
 
 ### Scene Defaults
 
