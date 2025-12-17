@@ -1,7 +1,5 @@
 #include "color.hpp"
 
-#include <__ostream/basic_ostream.h>
-
 #include <algorithm>
 #include <cmath>
 #include <iostream>

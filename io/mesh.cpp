@@ -1,4 +1,3 @@
-#include <__ostream/basic_ostream.h>
 #include <stddef.h>
 
 #include <fstream>

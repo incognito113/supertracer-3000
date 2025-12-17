@@ -1,10 +1,10 @@
 #include "vector.hpp"
 
-#include <__ostream/basic_ostream.h>
 #include <stdlib.h>
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 // Add two vectors
 Vector Vector::add(const Vector& other) const {

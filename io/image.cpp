@@ -1,10 +1,10 @@
 #include "image.hpp"
 
-#include <__ostream/basic_ostream.h>
 #include <stddef.h>
 
 #include <array>
 #include <fstream>
+#include <iostream>
 
 #include "io/tinyfiledialogs.hpp"
 #include "math/color.hpp"
