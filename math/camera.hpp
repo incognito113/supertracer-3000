@@ -1,7 +1,5 @@
 #pragma once
 
-#include <random>
-
 #include "ray.hpp"
 #include "vector.hpp"
 

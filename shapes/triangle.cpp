@@ -1,5 +1,13 @@
 #include "triangle.hpp"
 
+#include <stdlib.h>
+
+#include <cmath>
+#include <optional>
+
+#include "math/ray.hpp"
+#include "shapes/shape.hpp"
+
 // Construct triangle and compute normal
 Triangle::Triangle(const Vector& a, const Vector& b, const Vector& c,
                    const size_t matIndex)

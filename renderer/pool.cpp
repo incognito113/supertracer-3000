@@ -1,7 +1,6 @@
 #include "pool.hpp"
 
 #include <condition_variable>
-#include <iostream>
 
 // Initialize pool with given number of threads
 ThreadPool::ThreadPool(size_t numThreads) : stop(false) {
@@ -45,9 +44,9 @@ ThreadPool::~ThreadPool() {
 }
 
 // Get number of pending tasks
-size_t ThreadPool::numTasks() {
+int ThreadPool::numTasks() {
   std::unique_lock<std::mutex> lock(mtx);
-  return tasks.size();
+  return static_cast<int>(tasks.size());
 }
 
 // Check if abort flag is set

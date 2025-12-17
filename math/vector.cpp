@@ -1,5 +1,9 @@
 #include "vector.hpp"
 
+#include <__ostream/basic_ostream.h>
+#include <stdlib.h>
+
+#include <algorithm>
 #include <cmath>
 
 // Add two vectors

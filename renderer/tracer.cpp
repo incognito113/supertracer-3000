@@ -2,14 +2,20 @@
 
 #include <algorithm>
 #include <atomic>
-#include <condition_variable>
-#include <fstream>
-#include <iostream>
-#include <thread>
+#include <cmath>
+#include <limits>
+#include <memory>
+#include <optional>
+#include <random>
 #include <vector>
 
+#include "math/camera.hpp"
+#include "math/ray.hpp"
 #include "renderer/pool.hpp"
+#include "scene/light.hpp"
+#include "scene/material.hpp"
 #include "scene/scene.hpp"
+#include "shapes/plane.hpp"
 
 // Trace a ray through the scene and return the resulting color
 const Color Tracer::traceRay(const Scene& scene, const Ray& ray) const {

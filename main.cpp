@@ -1,7 +1,10 @@
-#include <fstream>
+#include <string>
 
 #include "io/image.hpp"
+#include "math/color.hpp"
+#include "math/vector.hpp"
 #include "renderer/renderer.hpp"
+#include "scene/material.hpp"
 #include "scene/scene.hpp"
 
 int main() {
@@ -48,13 +51,11 @@ int main() {
                     });
   }
 
-  std::cout << "Scene has " << scene.shapeCount() << " shapes." << std::endl;
-
-  // interactive window where you can move around the camera @ 60 fps
+  // Interactive window where you can move around the camera @ 60 fps
   Renderer renderer{scene, 60};
   renderer.run();
 
-  // static image output
+  // Static image output
   // Image image{renderer};
   // image.save("output.ppm");
 

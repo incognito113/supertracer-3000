@@ -1,7 +1,13 @@
 #include "cylinder.hpp"
 
+#include <stdlib.h>
+
 #include <algorithm>
 #include <cmath>
+#include <optional>
+
+#include "math/ray.hpp"
+#include "shapes/shape.hpp"
 
 Cylinder::Cylinder(const Vector& c, double r, double h, size_t matIndex)
     : BoundedShape(c - Vector(r, r, h * 0.5), c + Vector(r, r, h * 0.5),

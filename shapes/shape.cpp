@@ -1,5 +1,8 @@
 #include "shape.hpp"
 
+#include <algorithm>
+#include <utility>
+
 #include "math/vector.hpp"
 
 // Expand bounds to include another bounds

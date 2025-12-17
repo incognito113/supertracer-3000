@@ -3,8 +3,9 @@
 #include <cmath>
 #include <optional>
 
+#include "math/ray.hpp"
 #include "math/vector.hpp"
-#include "scene/light.hpp"
+#include "shapes/shape.hpp"
 
 // Bounding box is center +/- radius in all directions
 Sphere::Sphere(const Vector& cen, double r, const size_t matIndex)

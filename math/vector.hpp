@@ -2,9 +2,6 @@
 
 #include <iostream>
 
-// Forward declaration
-class Camera;
-
 // Represents a 3D vector with common vector operations
 class Vector {
  protected:

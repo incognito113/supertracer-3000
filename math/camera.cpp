@@ -1,6 +1,8 @@
 #include "camera.hpp"
 
-#include <numbers>
+#include <algorithm>
+#include <cmath>
+#include <stdexcept>
 
 #include "ray.hpp"
 #include "vector.hpp"

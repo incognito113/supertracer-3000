@@ -1,7 +1,11 @@
 #include "plane.hpp"
 
+#include <stdlib.h>
+
+#include <cmath>
 #include <optional>
 
+#include "math/ray.hpp"
 #include "math/vector.hpp"
 #include "shape.hpp"
 

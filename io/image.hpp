@@ -1,10 +1,14 @@
 #pragma once
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "math/color.hpp"
 #include "renderer/renderer.hpp"
+
+// Forward declaration
+class Scene;
 
 // Handles image creation and saving to files
 // Quality parameter controls number of samples per pixel

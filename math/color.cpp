@@ -1,9 +1,12 @@
 #include "color.hpp"
 
+#include <__ostream/basic_ostream.h>
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <string>
+
+#include "math/vector.hpp"
 
 // Unclamped: convert rgb integers to doubles
 Color::Color(int red, int green, int blue)
@@ -45,13 +48,13 @@ Color Color::clamp() const {
 }
 
 // Get color components as bytes in [0, 255]
-std::array<u_char, 3> Color::getBytes() const {
-  u_char red255 =
-      static_cast<u_char>(std::round(std::clamp(v.x(), 0.0, 1.0) * 255));
-  u_char green255 =
-      static_cast<u_char>(std::round(std::clamp(v.y(), 0.0, 1.0) * 255));
-  u_char blue255 =
-      static_cast<u_char>(std::round(std::clamp(v.z(), 0.0, 1.0) * 255));
+std::array<uint8_t, 3> Color::getBytes() const {
+  uint8_t red255 =
+      static_cast<uint8_t>(std::round(std::clamp(v.x(), 0.0, 1.0) * 255));
+  uint8_t green255 =
+      static_cast<uint8_t>(std::round(std::clamp(v.y(), 0.0, 1.0) * 255));
+  uint8_t blue255 =
+      static_cast<uint8_t>(std::round(std::clamp(v.z(), 0.0, 1.0) * 255));
   return {red255, green255, blue255};
 }
 

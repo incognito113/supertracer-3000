@@ -1,8 +1,15 @@
 #include "bvh.hpp"
 
-#include <array>
+#include <algorithm>
+#include <limits>
 #include <memory>
 #include <numeric>
+#include <optional>
+
+#include "math/vector.hpp"
+
+// Forward declaration
+class Ray;
 
 // Clear bin data
 void BVH::Bin::clear() {
@@ -69,6 +76,8 @@ int BVH::buildRecursive(
                      });
   } else {
     // Partition shapes around split position found by SAH
+    auto [splitIndex, splitPos_] = getBestSAHSplit(shapes, start, end, axis);
+    auto splitPos = splitPos_;
     auto midIter =
         std::partition(shapeIndices.begin() + start, shapeIndices.begin() + end,
                        [&](int index) {

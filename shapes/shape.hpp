@@ -1,11 +1,12 @@
 #pragma once
 
+#include <stddef.h>
+
+#include <limits>
 #include <optional>
 
-#include "math/color.hpp"
 #include "math/ray.hpp"
 #include "math/vector.hpp"
-#include "scene/material.hpp"
 
 // Stores information about collisions between rays and shapes
 struct HitInfo {
@@ -25,10 +26,6 @@ struct HitInfo {
         t(other.t),
         materialIndex(other.materialIndex) {};
 };
-
-// Forward declaration
-class Tracer;
-class Converter;
 
 // Abstract base class for all shapes in the scene
 class Shape {

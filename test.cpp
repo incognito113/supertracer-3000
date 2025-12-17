@@ -1,17 +1,19 @@
+#include <__ostream/basic_ostream.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 #include <array>
 #include <cassert>
-#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <optional>
-#include <thread>
 
-#include "math/camera.hpp"
 #include "math/color.hpp"
 #include "math/ray.hpp"
 #include "math/vector.hpp"
 #include "shapes/cylinder.hpp"
 #include "shapes/plane.hpp"
+#include "shapes/shape.hpp"
 #include "shapes/sphere.hpp"
 #include "shapes/triangle.hpp"
 
@@ -34,10 +36,10 @@ void test_color() {
   assert(c6 == Color(1.0, 0.4, 0.6));
   assert(c7.clamp() == Color(1.0, 0.4, 1.0));
 
-  const std::array<u_char, 3> bytes = c3.getBytes();
-  assert(bytes[0] == static_cast<u_char>(255));
-  assert(bytes[1] == static_cast<u_char>(51));
-  assert(bytes[2] == static_cast<u_char>(150));
+  const std::array<uint8_t, 3> bytes = c3.getBytes();
+  assert(bytes[0] == static_cast<uint8_t>(255));
+  assert(bytes[1] == static_cast<uint8_t>(51));
+  assert(bytes[2] == static_cast<uint8_t>(150));
 }
 
 void test_vector() {

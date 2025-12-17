@@ -1,14 +1,22 @@
 #pragma once
 
+#include <__ostream/basic_ostream.h>
+
 #include <atomic>
 #include <functional>
 #include <iostream>
+#include <thread>
+#include <vector>
 
 #include "math/color.hpp"
-#include "math/ray.hpp"
+#include "math/vector.hpp"
 #include "pool.hpp"
 #include "scene/bvh.hpp"
-#include "scene/scene.hpp"
+#include "shapes/shape.hpp"
+
+// Forward declaration
+class Ray;
+class Scene;
 
 struct Pixels {
   std::vector<int> pxSamples;   // Number of samples per pixel
@@ -25,9 +33,6 @@ struct Pixels {
 
   ~Pixels() = default;
 };
-
-// Forward declaration
-class Renderer;
 
 // Responsible for tracing rays through the scene and computing pixel colors
 class Tracer {

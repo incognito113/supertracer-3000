@@ -1,12 +1,13 @@
 #include "scene.hpp"
 
+#include <stdexcept>
+
 #include "light.hpp"
 #include "math/color.hpp"
 #include "math/vector.hpp"
-#include "shapes/plane.hpp"
+#include "shapes/cylinder.hpp"
 #include "shapes/sphere.hpp"
 #include "shapes/triangle.hpp"
-#include "shapes/cylinder.hpp"
 
 // Set camera parameters
 void Scene::setCamera(const Vector pos, const Vector dir, const double fovDeg) {
@@ -78,9 +79,7 @@ void Scene::addTriangle(const Vector& a, const Vector& b, const Vector& c,
   addBoundedShape<Triangle>(mat, a, b, c, nA.norm(), nB.norm(), nC.norm());
 }
 
-void Scene::addCylinder(const Vector& c, double r, double h, const Material& m) {
-    materials.push_back(m);
-    size_t matIndex = materials.size() - 1;
-    bndedShapes.push_back(std::make_unique<Cylinder>(c, r, h, matIndex));
+void Scene::addCylinder(const Vector& c, double r, double h,
+                        const Material& m) {
+  addBoundedShape<Cylinder>(m, c, r, h);
 }
-

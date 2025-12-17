@@ -1,6 +1,6 @@
 #pragma once
 
-#include <optional>
+#include <stddef.h>
 
 #include "math/vector.hpp"
 #include "shape.hpp"

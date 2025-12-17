@@ -1,8 +1,7 @@
 #pragma once
 
-#include <optional>
+#include <stddef.h>
 
-#include "math/ray.hpp"
 #include "math/vector.hpp"
 #include "shape.hpp"
 

@@ -1,3 +1,6 @@
+#include <__ostream/basic_ostream.h>
+#include <stddef.h>
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -5,12 +8,14 @@
 
 #include "math/vector.hpp"
 #include "scene/scene.hpp"
-#include "shapes/triangle.hpp"
+
+// Forward declaration
+struct Material;
 
 std::vector<std::string> splitByChar(std::string string, char splitter) {
   std::vector<std::string> blocks;
   std::string currentBlock;
-  for (int i = 0; (size_t) i < string.size(); i++) {
+  for (int i = 0; (size_t)i < string.size(); i++) {
     if (string[i] == splitter) {
       blocks.push_back(currentBlock);
       currentBlock.clear();
@@ -21,7 +26,6 @@ std::vector<std::string> splitByChar(std::string string, char splitter) {
   blocks.push_back(currentBlock);
   return blocks;
 }
-
 
 bool Scene::importOBJ(const Vector& offset, const std::string fileName,
                       const double scale, const Material& material) {
@@ -54,7 +58,6 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
   Vector zero;
 
   while (std::getline(file, currentLine)) {
-
     // Skip empty lines or lines with '#' comments
     if (currentLine.empty() || currentLine[0] == '#') {
       continue;
@@ -81,8 +84,7 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
       faceVertices.clear();
       faceNormals.clear();
 
-      for (i = 1; (size_t) i < commandList.size(); i++) {
-
+      for (i = 1; (size_t)i < commandList.size(); i++) {
         faceBlock = splitByChar(commandList[i], '/');
 
         // add the current vertex to the list of vertices for this face
@@ -91,9 +93,12 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
 
         // if there is a normal vector defined, add it to the list
         if (faceBlock.size() > 2) {
-          if (!faceBlock[2].empty()) { // put this in its own thing cuz idk in which order multi-parameter
-                                       // ifs are calculated, and just want to potentially avoid it trying
-                                       // to index the faceBlock if it isn't sure it has three strings
+          if (!faceBlock[2]
+                   .empty()) {  // put this in its own thing cuz idk in which
+                                // order multi-parameter ifs are calculated, and
+                                // just want to potentially avoid it trying to
+                                // index the faceBlock if it isn't sure it has
+                                // three strings
             normalIndex = std::stoi(faceBlock[2]);
             faceNormals.push_back(normalList[normalIndex - 1]);
           }
@@ -103,7 +108,8 @@ bool Scene::importOBJ(const Vector& offset, const std::string fileName,
       }
 
       // splits the polygonal face into triangles
-      for (splitVertex = 2; (size_t)splitVertex < faceVertices.size(); splitVertex++) {
+      for (splitVertex = 2; (size_t)splitVertex < faceVertices.size();
+           splitVertex++) {
         // Load triangle vertices and normals
         v1 = faceVertices[0] * scale + offset;
         v2 = faceVertices[splitVertex - 1] * scale + offset;

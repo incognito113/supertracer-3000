@@ -1,29 +1,26 @@
 #pragma once
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "math/camera.hpp"
 #include "math/color.hpp"
-#include "math/ray.hpp"
 #include "math/vector.hpp"
 #include "scene/light.hpp"
+#include "scene/material.hpp"
 #include "shapes/plane.hpp"
 #include "shapes/shape.hpp"
-
-// Forward declaration
-class Tracer;
-class Renderer;
-class Converter;
-class BVH;
 
 // Represents the entire 3D scene to be rendered
 class Scene {
  private:
-  const uint width;
-  const uint height;
-  const uint maxReflections;
+  const int width;
+  const int height;
+  const int maxReflections;
   double ambientLight;
   Camera camera;
   Color background;
@@ -78,9 +75,9 @@ class Scene {
     }
   }
 
-  uint getWidth() const { return width; }
-  uint getHeight() const { return height; }
-  uint getReflections() const { return maxReflections; }
+  int getWidth() const { return width; }
+  int getHeight() const { return height; }
+  int getReflections() const { return maxReflections; }
   double getAmbientLight() const { return ambientLight; }
   const Color getBackground() const { return background; }
   const Camera getCamera() const { return camera; }

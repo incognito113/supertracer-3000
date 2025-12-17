@@ -1,10 +1,14 @@
 #pragma once
 
+#include <stddef.h>
+
+#include <atomic>
 #include <condition_variable>
 #include <functional>
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <utility>
 #include <vector>
 
 // Simple thread pool for parallel task execution
@@ -32,8 +36,8 @@ class ThreadPool {
     cv.notify_one();
   }
 
-  size_t size() const { return workers.size(); }
-  size_t numTasks();
+  int size() const { return static_cast<int>(workers.size()); }
+  int numTasks();
 
   bool shouldAbort();
   void wait();

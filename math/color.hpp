@@ -1,6 +1,8 @@
 #pragma once
 
-#include <algorithm>
+#include <stdint.h>
+
+#include <array>
 #include <iostream>
 
 #include "vector.hpp"
@@ -23,7 +25,7 @@ class Color {
 
   // Clamping (returns new Color)
   Color clamp() const;
-  std::array<u_char, 3> getBytes() const;
+  std::array<uint8_t, 3> getBytes() const;
 
   // Arithmetic operators
   Color operator+(const Color& other) const { return Color(v + other.v); }

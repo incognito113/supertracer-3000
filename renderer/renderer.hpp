@@ -1,11 +1,13 @@
 #pragma once
 
-#include "SDL.h"
+#include <SDL_render.h>
+#include <SDL_video.h>
+#include <stdint.h>
+
+#include <vector>
+
 #include "renderer/tracer.hpp"
 #include "scene/scene.hpp"
-
-// Forward declaration
-class Image;
 
 class Renderer {
  private:
@@ -18,7 +20,7 @@ class Renderer {
   SDL_Renderer* sdlRenderer = nullptr;
   SDL_Texture* texture = nullptr;
   static constexpr double MOVE_SPEED = 0.3;
-  static constexpr uint MAX_QUALITY = 129;
+  static constexpr int MAX_QUALITY = 129;
 
   void updateImage8();
 

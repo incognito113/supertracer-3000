@@ -1,11 +1,17 @@
 #pragma once
 
+#include <stddef.h>
+
 #include <functional>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "scene/scene.hpp"
 #include "shapes/shape.hpp"
+
+// Forward declaration
+class Ray;
 
 struct BVHNode {
   Bounds bounds;
